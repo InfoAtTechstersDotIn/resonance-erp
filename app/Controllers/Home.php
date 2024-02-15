@@ -27,7 +27,8 @@ class Home extends BaseController
 
 	public function index()
 	{
-		if ($_SESSION['userdetails'] == null) {
+		$something = isset($_SESSION['userdetails']) ? $_SESSION['userdetails'] : 0;
+		if ($something == 0) {
 			return view('loggedoutuser/index.php');
 		} else {
 			return redirect()->to(base_url('dashboard'));
