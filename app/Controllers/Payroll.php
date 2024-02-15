@@ -17,6 +17,9 @@ class Payroll extends BaseController
         $session = session();
     }
 
+    
+
+    
     // public function salary_grade()
     // {
     //     $data['page_name'] = 'Payroll/salary_grade';
