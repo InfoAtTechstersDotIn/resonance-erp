@@ -1,0 +1,21 @@
+---
+    name: Deploy on Testing
+    on:
+        push:
+            branches:
+              - development
+              
+    jobs:
+      web-deploy:
+        name: Deploy on Testing
+        runs-on: ubuntu-latest
+        steps:
+        - name: Fetch Latest Code
+          uses: actions/checkout@v2
+        
+        - name: Sync Files
+          uses: SamKirkland/FTP-Deploy-Action@4.3.3
+          with:
+            server: ${{ secrets.FTP_SERVER_DEMO }}
+            username: ${{ secrets.FTP_USERNAME_DEMO }}
+            password: ${{ secrets.FTP_PASSWORD_DEMO }}
