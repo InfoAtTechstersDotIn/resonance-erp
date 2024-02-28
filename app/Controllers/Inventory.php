@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\HelperModel;
 use App\Models\InventoryModel;
+use App\Models\ManufacturerModel;
 use App\Models\UsersModel;
 use App\Models\ReservationModel;
 
@@ -44,6 +45,11 @@ class Inventory extends BaseController
             $data['name'] = $_POST['vendorname'];
             $data['gst'] = $_POST['vendorgst'];
             $data['pan'] = $_POST['vendorpan'];
+            $data['bank_name'] = $_POST['bank_name'];
+            $data['bank_branch'] = $_POST['bank_branch'];
+            $data['bank_ifsc'] = $_POST['bank_ifsc'];
+            $data['bank_account'] = $_POST['bank_account'];
+            $data['bank_account_holder'] = $_POST['bank_account_holder'];
 
             $inventoryModel = new InventoryModel();
             $inventoryModel->addvendor($data);
@@ -61,6 +67,11 @@ class Inventory extends BaseController
             $data['name'] = $_POST['vendorname'];
             $data['gst'] = $_POST['vendorgst'];
             $data['pan'] = $_POST['vendorpan'];
+            $data['bank_name'] = $_POST['bank_name'];
+            $data['bank_branch'] = $_POST['bank_branch'];
+            $data['bank_ifsc'] = $_POST['bank_ifsc'];
+            $data['bank_account'] = $_POST['bank_account'];
+            $data['bank_account_holder'] = $_POST['bank_account_holder'];
 
             $inventoryModel = new InventoryModel();
             $inventoryModel->update_vendor($vendorid, $data);
@@ -1896,5 +1907,60 @@ class Inventory extends BaseController
     }
     
     
+    public function manufacturers()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/manufacturers';
+
+            $manufacturerModel = new ManufacturerModel();
+            $data['manufacturers'] = $manufacturerModel->getManufacturers();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function addmanufacturer()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['name'] = $_POST['manufacturername'];
+
+            $manufacturerModel = new ManufacturerModel();
+            $manufacturerModel->addmanufacturer($data);
+
+            return redirect()->to(base_url('Inventory/manufacturers'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function updatemanufacturer()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $manufacturerid = $_POST['manufacturerid'];
+            $data['name'] = $_POST['manufacturername'];
+
+            $manufacturerModel = new ManufacturerModel();
+            $manufacturerModel->update_manufacturer($manufacturerid, $data);
+
+            return redirect()->to(base_url('Inventory/manufacturers'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function deletemanufacturer()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $id = $_GET['manufacturerid'];
+            $manufacturerModel = new ManufacturerModel();
+            $manufacturerModel->deletemanufacturer($id);
+
+            return redirect()->to(base_url('Inventory/manufacturers'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
 
 }

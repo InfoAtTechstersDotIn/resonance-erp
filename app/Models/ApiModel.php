@@ -1361,10 +1361,12 @@ class ApiModel extends Model
         $data['status'] = $status;
        // $data['amount'] = $amount;
       //  $data['amount1'] = $amount1;
+      if($status == 1){
         $data['approvedamount'] = $amount;
         $data['approvedamount1'] = $amount1;
         $data['approved_by'] = $userid;
         $data['commentreason'] = $commentreason;
+      }
         $data['approved_date'] = date('Y-m-d H:i:s');
         $builder = $db->table('reservation_discounts');
         $builder->where('id ', $id);
@@ -1376,9 +1378,11 @@ class ApiModel extends Model
 	    $db = db_connect();
         $data['status'] = $status;
        // $data['amount'] = $amount;
+        if($status == 1){
         $data['approvedamount'] = $amount;
         $data['approved_by'] = $userid;
         $data['commentreason'] = $commentreason;
+        }
         $data['approved_date'] = date('Y-m-d H:i:s');
         $builder = $db->table('reservation_discounts');
         $builder->where('id ', $id);
@@ -1389,10 +1393,12 @@ class ApiModel extends Model
 	{
 	    $db = db_connect();
         $data['status'] = $status;
+         if($status == 1){
        // $data['amount'] = $amount;
         $data['commentreason'] = $commentreason;
         $data['approvedamount'] = $amount;
         $data['approved_by'] = $userid;
+         }
         $data['approved_date'] = date('Y-m-d H:i:s');
         $builder = $db->table('reservation_discounts');
         $builder->where('id ', $id);
@@ -1610,22 +1616,32 @@ class ApiModel extends Model
 	public function approveddiscount()
 	{
 	    $db = db_connect();
-        $query = $db->query("SELECT * FROM `reservation_discounts` where approved_date like '%2024-02-09%' and type=2 and status=1 and userid NOT IN(10419,
-9150,
-4853,
-8840,
-9788,
-10112,
-4178,
-5330,
-4081,
-5629,
-9206,
-10144,
-7744,
-3745,
-4951
-);");
+        $query = $db->query("SELECT * FROM `reservation_discounts` where type=2 and status=0 and userid IN(2917,
+3075,
+3378,
+3385,
+3386,
+3391,
+3398,
+3399,
+3400,
+3402,
+3886,
+5405,
+6054,
+7696,
+10677,
+9883,
+10686,
+10245,
+10246,
+10535,
+10546,
+10810,
+10666,
+10769,
+10841,
+11711);");
         $results = $query->getResult();
         $db->close();
 

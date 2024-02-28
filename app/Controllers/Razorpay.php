@@ -445,7 +445,7 @@ class Razorpay extends BaseController
                 $batchid = $StudentDetail->batchid;
 
                 $admissiondate = $StudentDetail->admissiondate;
-                $reservationstatusid = 1;
+                $reservationstatusid = 4;
                 $scholarship = 0;
                 $tuition_discount = $StudentDetail->tuition_discount;
                 $tuition_discount1 = $StudentDetail->tuition_discount1;
@@ -874,7 +874,7 @@ class Razorpay extends BaseController
                 $batchid = $StudentDetail->batchid;
 
                 $admissiondate = $StudentDetail->admissiondate;
-                $reservationstatusid = 1;
+                $reservationstatusid = 4;
                 $scholarship = 0;
                 $tuition_discount = $StudentDetail->tuition_discount;
                 $hostel_discount = 0;

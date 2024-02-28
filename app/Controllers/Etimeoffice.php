@@ -102,7 +102,7 @@ class Etimeoffice extends BaseController
     public function dailypunchdata1($id=0)
     {
         $db = db_connect();
-         $date = date('Y-m-d',strtotime("-3 days"));
+         //$date = date('Y-m-d',strtotime("-3 days"));
         // $Fromdate = date('d/m/Y_00:00',strtotime("-2 days"));
         // $Todate = date('d/m/Y_23:59',strtotime("-2 days"));
         $usersModel = new UsersModel();
@@ -150,13 +150,13 @@ class Etimeoffice extends BaseController
     public function dailypunchdatastudent($id = "")
     {
         $db = db_connect();
-        if($id !="")
-        {
-            $date = date('Y-m-d',strtotime("-1 days"));
-        }else
-        {
-            $date = '2023-07-13';
-        }
+        // if($id !="")
+        // {
+        //     $date = date('Y-m-d',strtotime("-1 days"));
+        // }else
+        // {
+        //     $date = '2023-07-13';
+        // }
        
         $date1 = date('d/m/Y');
 
@@ -483,30 +483,25 @@ class Etimeoffice extends BaseController
                    echo "Staic ip Working";
                }
             }
-           public function differenceInHours($startdate,$enddate){
-        	$starttimestamp = strtotime($startdate);
-        	$endtimestamp = strtotime($enddate);
-        	$difference = abs($endtimestamp - $starttimestamp)/3600;
-        	return $difference;
+    public function differenceInHours($startdate,$enddate){
+    	$starttimestamp = strtotime($startdate);
+    	$endtimestamp = strtotime($enddate);
+    	$difference = abs($endtimestamp - $starttimestamp)/3600;
+    	return $difference;
     }
     public function autoregularize()
     {
         $db = db_connect();
         $date = date('Y-m-d',strtotime("-1 days"));
-        
         $usersModel = new UsersModel();
         $StudentDetails = $usersModel->getEmployeeToRegularize($date);
         foreach( $StudentDetails as $res)
         {
-            if($res->userid){
-                
-            }
             $login =  $res->loginTime;
             $logout =  $res->logoutTime;
-           $hours_difference = $this->differenceInHours($login,$logout);
-            
-           if($hours_difference >= 9)
-           {
+            $hours_difference = $this->differenceInHours($login,$logout);
+            if($hours_difference >= 9)
+            {
                 if($res->isLatelogin == 1)
                 {
                     $db = db_connect();
@@ -516,7 +511,7 @@ class Etimeoffice extends BaseController
                 {
                     $db->query("update employee_attendance set 	logoutregularised= 1,earlyLogoutReason='Auto Regularized' where attendance_id='{$res->attendance_id}'");
                 }
-           }
+            }
         }
     }
     

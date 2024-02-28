@@ -81,7 +81,7 @@
 		</div> 
 	<?php endif; ?>
 	
-		<?php if (count($_SESSION) > 0 && $_SESSION['agentdetails'] != null) : ?>
+		<?php if (isset($_SESSION['agentdetails'])) : ?>
 		<div class="mob_res" style="margin:20px 20px 20px 20px;float:right">
 			<b style="color: white;">Search</b>
 			<input type="text" id="tags" style="width: 25vw;" />

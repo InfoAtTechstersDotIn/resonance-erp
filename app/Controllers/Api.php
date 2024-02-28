@@ -3266,13 +3266,13 @@ class Api extends ResourceController
         $query12 = $db->query("SELECT batchlookup.batchname FROM `batchlookup` where batchid = '$batchid'");
         $results_d2 = $query12->getResult();
         
-        $query1 = $db->query("SELECT count(*) as count FROM `reservation_discounts` where userid = '$reservationid' and status=0 and type={$type}");
+        $query1 = $db->query("SELECT count(*) as count FROM `reservation_discounts` where userid = '$reservationid' and type={$type}");
         $results_d = $query1->getResult();
         if($results_d[0]->count > 0)
         {
              $response = [
                 "status" => false,
-                "message" => "Previous voucher request is pending for approval."
+                "message" => "Already Voucher Discount request have been raised."
             ];
         }else{
         $model = new ApiModel();
@@ -3398,9 +3398,10 @@ class Api extends ResourceController
     }
     public function postpayment()
     {
+        
     	$db = db_connect();
 	    $model = new ApiModel();
-        $model = $model->approveddiscount();
+         $model = $model->approveddiscount();
         foreach($model as $res){
           
         
@@ -3416,7 +3417,7 @@ class Api extends ResourceController
         // $type = $this->request->getVar("type");
         // $batchid = $this->request->getVar("batchid");
         // $commentreason = $this->request->getVar("commentreason");
-        
+        // student payment discount
         $reservationid = $res->userid;
         $voucherid = $res->reservation_discountid;
         $batchid = $res->batchid;
@@ -3424,7 +3425,7 @@ class Api extends ResourceController
 		$userid = $res->requested_to;
 		$paymentamount = $res->amount;
 		// $paymentdate = date_create_from_format("d/m/Y", $_POST['paymentdate']) != false ? date_format(date_create_from_format("d/m/Y", $_POST['paymentdate']), 'Y-m-d') : date('Y-m-d');
-		$paymentdate = "2024-02-09";
+		$paymentdate = "2024-02-16";
 		$otherdetails = $res->discounttype;
 		$remarks = $res->comments;
 		$paymentcollectedby = 1;
@@ -3436,7 +3437,191 @@ class Api extends ResourceController
         $paymentsModel = new PaymentsModel();
         $result = $paymentsModel->addStudentPayments($reservation_paymentid, $reservationid, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $batchid, $remarks,$voucherid,$userid);
         $nextpaymentid = $helperModel->set_paymentidcounter();
-         
+         	$db = db_connect();
+         	$date= date('Y-m-d H:i:s');
+         	$id = $res->id;
+         	//echo "update reservation_discounts set status=1,approved_date='$date',approvedamount='$paymentamount',approved_by=$userid where id = '$id'";
+         	$query123 = $db->query("update reservation_discounts set status=1,approved_date='$date',approvedamount='$paymentamount',approved_by=62 where id = '$id'");
+			$query12 = $db->query("SELECT batchlookup.batchname FROM `batchlookup` where batchid = '$batchid'");
+            $results_d2 = $query12->getResult();
+            $usersModel = new UsersModel();
+        	$StudentDetailS = $usersModel->getStudentDetails($reservationid, $batchid);
+			$comm = new Comm();
+            $data[0] = $StudentDetailS[0]->mobile1;
+            $data[1] = $StudentDetailS[0]->name;
+            $data[2] = $StudentDetailS[0]->applicationnumber;
+            $data[3] = $StudentDetailS[0]->branchname;
+            $data[5] = $results_d2[0]->batchname;
+            $data[6] = $StudentDetailS[0]->packagename;
+            $data[7] = $paymentamount;
+            $data[4] ="rb.gy/o0uabr?rd={$reservation_paymentid}";
+            $comm->sendSMS("ReservationDiscount", $data);
+/*
+
+        // reservation discount payment
+        
+        
+        $reservationid = $res->userid;
+        $voucherid = $res->reservation_discountid;
+        $batchid = $res->batchid;
+		$paymenttypeid = 10;
+		$userid = $res->requested_to;
+		$paymentamount = $res->amount;
+		// $paymentdate = date_create_from_format("d/m/Y", $_POST['paymentdate']) != false ? date_format(date_create_from_format("d/m/Y", $_POST['paymentdate']), 'Y-m-d') : date('Y-m-d');
+		$paymentdate = "2024-02-16";
+		$otherdetails = $res->discounttype;
+		$remarks = $res->comments;
+		$paymentcollectedby = 1;
+		$paymentstatusid = 1;
+
+            //$reservationid = $studentid;
+		//	$paymenttypeid = 10;
+		//	$paymentamount = $amount;
+			// $paymentdate = date_create_from_format("d/m/Y", $_POST['paymentdate']) != false ? date_format(date_create_from_format("d/m/Y", $_POST['paymentdate']), 'Y-m-d') : date('Y-m-d');
+		//	$paymentdate = date('Y-m-d');
+		//	$otherdetails = $discounttype;
+		//	$remarks = $comments;
+			//$paymentcollectedby = 1;
+		//	$paymentstatusid = 1;
+			$helperModel = new HelperModel();
+			$batch = $helperModel->get_batch()->year;
+			$nextpaymentid = $helperModel->get_paymentidcounter();
+			$reservation_paymentid = "RMD-" . $batch . "-" . str_pad($nextpaymentid, 6, '0', STR_PAD_LEFT);
+			$reservationModel = new ReservationModel();
+			$result = $reservationModel->addReservationPaymentVoucher(
+				$reservation_paymentid,
+				$reservationid,
+				62,
+				$paymentamount,
+				$paymentdate,
+				$paymenttypeid,
+				$otherdetails,
+				$paymentcollectedby,
+				$paymentstatusid,
+				$batchid,
+				$remarks,
+				$voucherid
+			);
+// 		//	if ($result->resultID) {
+			$nextpaymentid = $helperModel->set_paymentidcounter();
+			$html = file_get_contents(base_url("payments/print_reservationdiscountreceipt?reservationpaymentid={$reservation_paymentid}&batchid={$batchid}&voucherid={$voucherid}"));
+			$paymentsModel = new PaymentsModel();
+			$paymentsModel->htmltopdf($html, 'save', $reservation_paymentid, 'RP');
+			$StudentDetailS = $reservationModel->getReservationDetails($reservationid,$batchid);
+                $comm = new Comm();
+                $data[0] = $StudentDetailS->mobile1;
+                $data[1] = $StudentDetailS->name;
+                $data[2] = $StudentDetailS->reservation_ukey;
+                $data[3] = $StudentDetailS->branchname;
+                $data[5] = $StudentDetailS->batchname;
+                $data[6] = $StudentDetailS->packagename;
+                $data[7] = $paymentamount;
+                $data[4] ="rb.gy/o0uabr?rd={$reservation_paymentid}";
+                $comm->sendSMS("ReservationDiscount", $data);
+                
+                $date= date('Y-m-d H:i:s');
+         	$id = $res->id;
+// //          	//echo "update reservation_discounts set status=1,approved_date='$date',approvedamount='$paymentamount',approved_by=$userid where id = '$id'";
+         	$query123 = $db->query("update reservation_discounts set status=1,approved_date='$date',approvedamount='$paymentamount',approved_by=62 where id = '$id'");
+                
+		     $reservationid = $res->userid;
+        $voucherid = $res->reservation_discountid;
+        $batchid = $res->batchid;
+		$paymenttypeid = 10;
+		$userid = $res->requested_to;
+		$paymentamount = $res->amount1;
+		// $paymentdate = date_create_from_format("d/m/Y", $_POST['paymentdate']) != false ? date_format(date_create_from_format("d/m/Y", $_POST['paymentdate']), 'Y-m-d') : date('Y-m-d');
+		$paymentdate = "2024-02-16";
+		$otherdetails = $res->discounttype;
+		$remarks = $res->comments;
+		$paymentcollectedby = 1;
+		$paymentstatusid = 1;
+			$helperModel = new HelperModel();
+			$batch = $helperModel->get_batch()->year;
+			$nextpaymentid = $helperModel->get_paymentidcounter();
+			$reservation_paymentid = "RMD-" . $batch . "-" . str_pad($nextpaymentid, 6, '0', STR_PAD_LEFT);
+			$reservationModel = new ReservationModel();
+			$result = $reservationModel->addReservationPaymentVoucher(
+				$reservation_paymentid,
+				$reservationid,
+				62,
+				$paymentamount,
+				$paymentdate,
+				$paymenttypeid,
+				$otherdetails,
+				$paymentcollectedby,
+				$paymentstatusid,
+				5,
+				$remarks,
+				$voucherid
+			);
+			$batchid = $batchid+1;
+		//	if ($result->resultID) {
+			$nextpaymentid = $helperModel->set_paymentidcounter();
+			$html = file_get_contents(base_url("payments/print_reservationdiscountreceipt?reservationpaymentid={$reservation_paymentid}&batchid={$batchid}&voucherid={$voucherid}"));
+			$paymentsModel = new PaymentsModel();
+			$paymentsModel->htmltopdf($html, 'save', $reservation_paymentid, 'RP');
+			
+			//$StudentDetailS = $reservationModel->getReservationDetails($reservationid,5);
+			$comm = new Comm();
+                $data[0] = $StudentDetailS->mobile1;
+                $data[1] = $StudentDetailS->name;
+                $data[2] = $StudentDetailS->reservation_ukey;
+                $data[3] = $StudentDetailS->branchname;
+                $data[5] = "2025-26";
+                $data[6] = $StudentDetailS->packagename;
+                $data[7] = $paymentamount;
+                $data[4] ="rb.gy/o0uabr?rd={$reservation_paymentid}";
+                $comm->sendSMS("ReservationDiscount", $data);
+                
+                $date= date('Y-m-d H:i:s');
+         	$id = $res->id;
+//          	//echo "update reservation_discounts set status=1,approved_date='$date',approvedamount='$paymentamount',approved_by=$userid where id = '$id'";
+         	$query123 = $db->query("update reservation_discounts set status=1,approved_date='$date',approvedamount1='$paymentamount',approved_by=62 where id = '$id'");
+                */
+                
+        	$query1 = $db->query("SELECT created_by FROM `reservation_discounts` where id = '$id'");
+            $results_d = $query1->getResult();
+            $created_by = $results_d[0]->created_by;
+            $query1 = $db->query("SELECT name,firebase FROM `employeedetails` where userid = '$created_by'");
+            $results = $query1->getResult();
+            $token = $results[0]->firebase;
+            if ($token != "") {
+                $description = "S-voucher Requested have been approved";
+                $message = "S-voucher";
+                $google_api_key =
+                    "AAAAVgjSTtk:APA91bHDVyLfnWLl4NzHOHA8oE8-vMdqUXSNs2Z016_ecAQKstmNj4aQztNcTY_WC6nj-zl0XkAux4OlTqMQDzKSlVkU5xpq0Ya-IpNC7LxiA95dzW9LIpg8YLK1G8JJ9Uhml-CzrAgr";
+                $registrationIds = $token;
+                #prep the bundle
+                $msg = [
+                    "body" => $description,
+                    "title" => $message,
+                    "sound" => 1 /*Default sound*/,
+                ];
+
+                $fields = [
+                    "to" => $registrationIds,
+                    "notification" => $msg,
+                ];
+                $headers = [
+                    "Authorization: key=" . $google_api_key,
+                    "Content-Type: application/json",
+                ];
+                #Send Reponse To FireBase Server
+                $ch = curl_init();
+                curl_setopt(
+                    $ch,
+                    CURLOPT_URL,
+                    "https://fcm.googleapis.com/fcm/send"
+                );
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+                $result = curl_exec($ch);
+                curl_close($ch);
+            }
         }
          
     }
@@ -3456,7 +3641,9 @@ class Api extends ResourceController
         $batchid = $this->request->getVar("batchid");
         $commentreason = $this->request->getVar("commentreason");
         $model = new ApiModel();
+        
         $model->approvereservationdiscount($id, $status,$userid,$studentid,$amount,$amount1,$comments,$commentreason);
+         if($status == 1){
         if($type=="Reservation"){
             $reservationid = $studentid;
 			$paymenttypeid = 10;
@@ -3631,7 +3818,7 @@ class Api extends ResourceController
                 curl_close($ch);
             }
                 
-            
+         }
         $response = [
             "status" => true,
             "message" => "success",
@@ -3699,13 +3886,13 @@ class Api extends ResourceController
         $db = db_connect();
         $query12 = $db->query("SELECT batchlookup.batchname FROM `batchlookup` where batchid = '$batchid'");
         $results_d2 = $query12->getResult();
-        $query1 = $db->query("SELECT count(*) as count FROM `reservation_discounts` where userid = '$reservationid' and status=0 and type={$type}");
+        $query1 = $db->query("SELECT count(*) as count FROM `reservation_discounts` where userid = '$reservationid' and type={$type}");
         $results_d = $query1->getResult();
         if($results_d[0]->count > 0)
         {
              $response = [
                 "status" => false,
-                "message" => "Previous voucher request is pending for approval."
+                "message" => "Already Voucher Discount request have been raised."
             ];
         }else{
         $model = new ApiModel();
@@ -3814,7 +4001,7 @@ class Api extends ResourceController
         $batchid = $this->request->getVar("batchid");
         $model = new ApiModel();
         $model->approvefvoucher($id, $status,$userid,$studentid,$amount,$comments,$commentreason);
-        
+         if($status == 1){
         if($type=="Reservation"){
         $reservationid = $studentid;
 			$paymenttypeid = 11;
@@ -3868,6 +4055,7 @@ class Api extends ResourceController
             $result = $paymentsModel->addStudentPayments($reservation_paymentid, $reservationid, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $batchid, $remarks,$voucherid,$userid);
        
         }
+         }
         $response = [
             "status" => true,
             "message" => "success",
@@ -4023,7 +4211,7 @@ class Api extends ResourceController
         $db = db_connect();
         $query12 = $db->query("SELECT batchlookup.batchname FROM `batchlookup` where batchid = '$batchid'");
         $results_d2 = $query12->getResult();
-        $query1 = $db->query("SELECT count(*) as count FROM `reservation_discounts` where userid = '$reservationid' and status=0 and type={$type}");
+        $query1 = $db->query("SELECT count(*) as count FROM `reservation_discounts` where userid = '$reservationid' and type={$type}");
         $results_d = $query1->getResult();
         if($results_d[0]->count > 0)
         {
@@ -4093,6 +4281,7 @@ class Api extends ResourceController
         $batchid = $this->request->getVar("batchid");
         $model = new ApiModel();
         $model->approveevoucher($id, $status,$userid,$studentid,$amount,$comments,$commentreason);
+         if($status == 1){
         if($type=="Reservation"){
         $reservationid = $studentid;
 			$paymenttypeid = 12;
@@ -4147,6 +4336,7 @@ class Api extends ResourceController
             $result = $paymentsModel->addStudentPayments($reservation_paymentid, $reservationid, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $batchid , $remarks,$voucherid,$userid);
        
          }
+         }
         $response = [
             "status" => true,
             "message" => "success",
@@ -4195,5 +4385,76 @@ class Api extends ResourceController
             "message" => "success",
         ];
         return $this->respondCreated($response);
+    }
+    public function send()
+	{
+		$device_token = "e4yiqRZZLEg7jSyxxFT3t_:APA91bEzaEOEeN4u3noF4fEGupoL3S5VVTFHjDlVNPZ_H9GvL_yMsqpdUH8PxNQtdTwwgX5t59tXddook5a9eWO20NrEApu5Tnwl78jIwWgMCICed5gR7hjRUXFLxzYeRY0-tyzdB73e";
+        $description = "S-voucher Requested have been approved";
+                $message = "S-voucher";
+                $google_api_key =
+                    "AAAAVgjSTtk:APA91bHDVyLfnWLl4NzHOHA8oE8-vMdqUXSNs2Z016_ecAQKstmNj4aQztNcTY_WC6nj-zl0XkAux4OlTqMQDzKSlVkU5xpq0Ya-IpNC7LxiA95dzW9LIpg8YLK1G8JJ9Uhml-CzrAgr";
+                $registrationIds = $device_token;
+                #prep the bundle
+                $msg = [
+                    "body" => $description,
+                    "title" => $message,
+                    "sound" => 1 /*Default sound*/,
+                ];
+
+                $fields = [
+                    "to" => $registrationIds,
+                    "notification" => $msg,
+                ];
+                $headers = [
+                    "Authorization: key=" . $google_api_key,
+                    "Content-Type: application/json",
+                ];
+                #Send Reponse To FireBase Server
+                $ch = curl_init();
+                curl_setopt(
+                    $ch,
+                    CURLOPT_URL,
+                    "https://fcm.googleapis.com/fcm/send"
+                );
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+                $result = curl_exec($ch);
+                curl_close($ch);
+		
+	}
+
+	public function sendNotification($device_token, $message)
+    {
+        $SERVER_API_KEY = 'AAAAVgjSTtk:APA91bHDVyLfnWLl4NzHOHA8oE8-vMdqUXSNs2Z016_ecAQKstmNj4aQztNcTY_WC6nj-zl0XkAux4OlTqMQDzKSlVkU5xpq0Ya-IpNC7LxiA95dzW9LIpg8YLK1G8JJ9Uhml-CzrAgr';
+  
+        // payload data, it will vary according to requirement
+        $data = [
+            "to" => $device_token, // for single device id
+            "data" => $message
+        ];
+        $dataString = json_encode($data);
+    
+        $headers = [
+            'Authorization: key=' . $SERVER_API_KEY,
+            'Content-Type: application/json',
+        ];
+    
+        $ch = curl_init();
+      
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+               
+        $response = curl_exec($ch);
+      
+        curl_close($ch);
+      
+        return $response;
     }
 }

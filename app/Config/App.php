@@ -21,7 +21,7 @@ class App extends BaseConfig
 	| environments.
 	|
 	*/
-	public $baseURL = 'https://maidendropgroup.com/public';
+	public $baseURL = 'http://localhost/ERP/public';
 
 	/*
 	|--------------------------------------------------------------------------

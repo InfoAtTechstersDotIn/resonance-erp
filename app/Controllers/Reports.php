@@ -1127,6 +1127,9 @@ class Reports extends BaseController
                            if($value ==1)
                            {
                                $value = "Approved";
+                           }elseif($value ==2)
+                           {
+                               $value = "Rejected";
                            }else
                            {
                                $value = "Pending";
@@ -1184,6 +1187,9 @@ class Reports extends BaseController
                            if($value ==1)
                            {
                                $value = "Approved";
+                           }elseif($value ==2)
+                           {
+                               $value = "Rejected";
                            }else
                            {
                                $value = "Pending";

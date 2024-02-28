@@ -3,10 +3,13 @@
 namespace App\Controllers;
 
 use App\Models\AdminModel;
+use App\Models\BuildingModel;
 use App\Models\EmailModel;
+use App\Models\FloorModel;
 use App\Models\HelperModel;
 use App\Models\MasterModel;
 use App\Models\PaymentsModel;
+use App\Models\RoomModel;
 use App\Models\UsersModel;
 
 class Master extends BaseController
@@ -367,4 +370,203 @@ class Master extends BaseController
         }
     }
     // SUBJECT
+
+    public function buildings()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Master/building';
+
+            $buildingModel = new BuildingModel();
+            $data['buildings'] = $buildingModel->get_buildings();
+
+            $helperModel = new HelperModel();
+            $data['lookups'] = $helperModel->get_lookups();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function addbuilding()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['name'] = $_POST['buildingname'];
+            $data['branch_id'] = $_POST['branch_id'];
+
+            $buildingModel = new BuildingModel();
+            $buildingModel->add_building($data);
+
+            return redirect()->to(base_url('Master/buildings'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function updatebuilding()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $buildingid = $_POST['buildingid'];
+            $data['name'] = $_POST['buildingname'];
+            $data['branch_id'] = $_POST['branch_id'];
+
+            $buildingModel = new BuildingModel();
+            $buildingModel->update_building($buildingid, $data);
+
+            return redirect()->to(base_url('Master/buildings'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function deletebuilding()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $id = $_GET['buildingid'];
+            $buildingModel = new BuildingModel();
+            $buildingModel->delete_building($id);
+
+            return redirect()->to(base_url('Master/buildings'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function floors()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Master/floor';
+
+            $floorModel = new FloorModel();
+            $data['floors'] = $floorModel->get_floors();
+
+            $helperModel = new HelperModel();
+            $data['lookups'] = $helperModel->get_lookups();
+
+            $floorModel = new BuildingModel();
+            $data['buildings'] = $floorModel->get_all_buildings();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function addfloor()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['name'] = $_POST['floorname'];
+            $data['branch_id'] = $_POST['branch_id'];
+            $data['building_id'] = $_POST['building_id'];
+
+            $floorModel = new FloorModel();
+            $floorModel->add_floor($data);
+
+            return redirect()->to(base_url('Master/floors'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function updatefloor()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $floorid = $_POST['floorid'];
+            $data['name'] = $_POST['floorname'];
+            $data['branch_id'] = $_POST['branch_id'];
+            $data['building_id'] = $_POST['building_id'];
+
+            $floorModel = new FloorModel();
+            $floorModel->update_floor($floorid, $data);
+
+            return redirect()->to(base_url('Master/floors'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function deletefloor()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $id = $_GET['floorid'];
+            $floorModel = new FloorModel();
+            $floorModel->delete_floor($id);
+
+            return redirect()->to(base_url('Master/floors'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function rooms()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Master/room';
+
+            $roomModel = new RoomModel();
+            $data['rooms'] = $roomModel->get_rooms();
+
+            $helperModel = new HelperModel();
+            $data['lookups'] = $helperModel->get_lookups();
+
+            $floorModel = new BuildingModel();
+            $data['buildings'] = $floorModel->get_all_buildings();
+
+            $floorModel = new FloorModel();
+            $data['floors'] = $floorModel->get_all_floors();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function addroom()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['name'] = $_POST['roomname'];
+            $data['branch_id'] = $_POST['branch_id'];
+            $data['building_id'] = $_POST['building_id'];
+            $data['floor_id'] = $_POST['floor_id'];
+
+            $roomModel = new RoomModel();
+            $roomModel->add_room($data);
+
+            return redirect()->to(base_url('Master/rooms'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function updateroom()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $roomid = $_POST['roomid'];
+            $data['name'] = $_POST['roomname'];
+            $data['branch_id'] = $_POST['branch_id'];
+            $data['building_id'] = $_POST['building_id'];
+            $data['floor_id'] = $_POST['floor_id'];
+
+            $roomModel = new RoomModel();
+            $roomModel->update_room($roomid, $data);
+
+            return redirect()->to(base_url('Master/rooms'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function deleteroom()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $id = $_GET['roomid'];
+            
+            $roomModel = new RoomModel();
+            $roomModel->delete_room($id);
+
+            return redirect()->to(base_url('Master/rooms'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
 }

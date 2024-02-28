@@ -93,10 +93,14 @@
                                             </td>
                                              <td>
                                                 <?php
-                                                if($result->status==0){
-                                                    echo "Pending";
-                                                }else{
+                                                if($result->status==1){
                                                     echo "Approved";
+                                                }elseif($result->status==0){
+                                                    echo "Pending";
+                                                }elseif($result->status==2){
+                                                    echo "Rejected";
+                                                }else{
+                                                    echo "-";
                                                 }?>
                                             </td>
                                              <td>

@@ -263,7 +263,6 @@ class Payments extends BaseController
 			$roll = $studentDetails[0]->applicationnumber;
 			$name = $studentDetails[0]->name;
 			$url = "rb.gy/o0uabr?p=" . $paymentid;
-			$curl = curl_init();
 			curl_setopt_array($curl, array(
               CURLOPT_URL => 'https://backend.api-wa.co/campaign/yokr/api',
               CURLOPT_RETURNTRANSFER => true,

@@ -13,6 +13,10 @@
                                     <th>Vendor Name</th>
                                     <th>Vendor GST</th>
                                     <th>Vendor PAN</th>
+                                    <th>Bank</th>
+                                    <th>Branch</th>
+                                    <th>IFSC</th>
+                                    <th>Account No.</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
                                 </tr>
@@ -26,7 +30,11 @@
                                         <td><?php echo $result->name ?></td>
                                         <td><?php echo $result->gst ?></td>
                                         <td><?php echo $result->pan ?></td>
-                                        <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->name ?>','<?php echo  $result->gst ?>','<?php echo  $result->pan ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
+                                        <td><?php echo $result->bank_name ?></td>
+                                        <td><?php echo $result->bank_branch ?></td>
+                                        <td><?php echo $result->bank_ifsc ?></td>
+                                        <td><?php echo $result->bank_account ?></td>
+                                        <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->name ?>','<?php echo  $result->gst ?>','<?php echo  $result->pan ?>','<?php echo  $result->bank_name ?>','<?php echo  $result->bank_branch ?>','<?php echo  $result->bank_ifsc ?>','<?php echo  $result->bank_account ?>','<?php echo  $result->bank_account_holder ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
                                         <td><i onclick="remove('<?php echo $result->id ?>')" class='fa fa-trash'></i></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -59,10 +67,35 @@
                                         <label class="text-uppercase text-sm">Vendor GST</label>
                                         <input type="text" placeholder="Vendor GST" name="vendorgst" class="form-control mb" required>
                                     </div>
-                                
                                     <div class="col-md-6">
                                         <label class="text-uppercase text-sm">Vendor PAN</label>
                                         <input type="text" placeholder="Vendor PAN" name="vendorpan" class="form-control mb" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Bank Name</label>
+                                        <input type="text" placeholder="Bank Name" name="bank_name" class="form-control mb" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Branch Name</label>
+                                        <input type="text" placeholder="Branch Name" name="bank_branch" class="form-control mb" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Bank IFSC</label>
+                                        <input type="text" placeholder="Bank IFSC" name="bank_ifsc" class="form-control mb" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Bank Account No.</label>
+                                        <input type="text" placeholder="Bank Account No." name="bank_account" class="form-control mb" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Account Holder</label>
+                                        <input type="text" placeholder="Account Holder" name="bank_account_holder" class="form-control mb" required>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Add Vendor</button>
@@ -102,6 +135,32 @@
                                         <input type="text" placeholder="Vendor PAN" name="vendorpan" id="vendorpan"  class="form-control mb" required>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Bank Name</label>
+                                        <input type="text" placeholder="Bank Name" name="bank_name" id="bank_name" class="form-control mb" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Branch Name</label>
+                                        <input type="text" placeholder="Branch Name" name="bank_branch" id="bank_branch" class="form-control mb" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Bank IFSC</label>
+                                        <input type="text" placeholder="Bank IFSC" name="bank_ifsc" id="bank_ifsc" class="form-control mb" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Bank Account No.</label>
+                                        <input type="text" placeholder="Bank Account No." name="bank_account" id="bank_account" class="form-control mb" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Account Holder</label>
+                                        <input type="text" placeholder="Account Holder" name="bank_account_holder" id="bank_account_holder" class="form-control mb" required>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn btn-primary">Update Vendor</button>
                             </form>
                         </div>
@@ -113,11 +172,16 @@
 </div>
 
 <script>
-    function edit(id, name,gst,pan) {
+    function edit(id, name,gst,pan, bank_name, bank_branch, bank_ifsc, bank_account, bank_account_holder) {
         $('#vendorid').val(id);
         $('#vendorname').val(name);
         $('#vendorgst').val(gst);
         $('#vendorpan').val(pan);
+        $('#bank_name').val(bank_name);
+        $('#bank_branch').val(bank_branch);
+        $('#bank_ifsc').val(bank_ifsc);
+        $('#bank_account').val(bank_account);
+        $('#bank_account_holder').val(bank_account_holder);
     }
 
     function remove(vendorid) {

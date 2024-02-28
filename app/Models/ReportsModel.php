@@ -355,7 +355,7 @@ class ReportsModel extends Model
         $ReservationDateFrom,
         $ReservationDateTo
     ) {
-        $where = "RP.remarks ='Booking Amount'";
+        $where = "";
 
         if ($batchid != NULL) {
             if ($where == '') {
@@ -450,7 +450,7 @@ class ReportsModel extends Model
                                     A.school, A.place, A.courseid, A.admissiontypeid,
                                     A.gendername, A.admissiontypename, A.coursename, A.mobile1, A.mobile2, A.email,
                                     A.studentaadhaar, A.categoryname, A.religionname,
-                                    A.ReferredBy, A.reservationstatusname, A.discountrequested,A.paymentdate,
+                                    A.ReferredBy, A.reservationstatusname, A.discountrequested,A.reservation_date,
                                     
                                     (SELECT Sum(feesvalue) FROM feestructurelookup FL WHERE  feetype <> 'Intermediate Fee' AND feetype <> 'Hostel Fee'
                                     AND FL.courseid = A.courseid
@@ -481,7 +481,7 @@ class ReportsModel extends Model
                              (SELECT R.reservationid, R.batchid, R.email, R.admissiondate, BL.branchid, BL.branchname, R.reservation_ukey, 
                                      GL.gendername, R.dateofbirth, ED.name AS ReferredBy,
                                      R.studentaadhaar, CTL.categoryname, RL.religionname,
-                                     R.name, R.fathername, R.mothername, RP.paymentdate,
+                                     R.name, R.fathername, R.mothername, R.reservation_date,
                                      REPLACE(JSON_EXTRACT(address, '$[0].permanent.door_street'), '\"', '') AS door_street, 
                                      REPLACE(JSON_EXTRACT(address, '$[0].permanent.village_mandal'), '\"', '') AS village_mandal,
                                      REPLACE(JSON_EXTRACT(address, '$[0].permanent.landmark'), '\"', '') AS landmark, 
@@ -493,7 +493,6 @@ class ReportsModel extends Model
                                      REPLACE(JSON_EXTRACT(previous_class_information, \"$[0].place\"), '\"', '') AS place,  
                                      CL.coursename, CL.courseid, mobile1, mobile2, 
                                      R.tuition_discount, R.hostel_discount, R.ipe_discount, R.discountrequested,R.discountgiven, AL.admissiontypename, AL.admissiontypeid, RSL.reservationstatusname FROM reservation R
-                                                   LEFT JOIN reservation_payments RP ON RP.reservationid = R.reservationid
                                                    LEFT JOIN branchlookup BL ON R.branchid = BL.branchid
                                                    LEFT JOIN courselookup CL ON R.courseid = CL.courseid 
                                                    LEFT JOIN employeedetails ED ON R.referredby = ED.userid 

@@ -695,6 +695,8 @@ class ReservationModel extends Model
        $data['additionaldiscountgiven'] =      $additionaldiscountgiven;
 
         $data['created_by'] = $created_by;
+        $date = date('Y-m-d H:i:s');
+        $data['reservation_date'] = $date;
 
         $builder = $db->table('reservation');
         $builder->insert($data);
