@@ -5,8 +5,12 @@ namespace App\Controllers;
 use App\Models\HelperModel;
 use App\Models\InventoryModel;
 use App\Models\ManufacturerModel;
+use App\Models\ProductSpecificationModel;
+use App\Models\PurchaseInvoiceItemModel;
+use App\Models\PurchaseInvoiceModel;
 use App\Models\UsersModel;
 use App\Models\ReservationModel;
+use App\Models\WarehouseModel;
 
 class Inventory extends BaseController
 {
@@ -1958,6 +1962,173 @@ class Inventory extends BaseController
             $manufacturerModel->deletemanufacturer($id);
 
             return redirect()->to(base_url('Inventory/manufacturers'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function product_specifications()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/productSpecification';
+
+            $productSpecificationModel = new ProductSpecificationModel();
+            $data['product_specifications'] = $productSpecificationModel->get_product_specifications();
+
+            $inventoryModel = new InventoryModel();
+            $data['categories'] = $inventoryModel->getproductcategorys();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function add_product_specification()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            
+            $data['name'] = $_POST['name'];
+            $data['category_id'] = $_POST['category_id'];
+
+            $productSpecificationModel = new ProductSpecificationModel();
+            $productSpecificationModel->add_product_specification($data);
+
+            return redirect()->to(base_url('Inventory/product_specifications'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function update_product_specification()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $product_specification_id = $_POST['product_specification_id'];
+            $data['name'] = $_POST['name'];
+            $data['category_id'] = $_POST['category_id'];
+
+            $productSpecificationModel = new ProductSpecificationModel();
+            $productSpecificationModel->update_product_specification($product_specification_id, $data);
+
+            return redirect()->to(base_url('Inventory/product_specifications'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function delete_product_specification()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $id = $_GET['product_specification_id'];
+
+            $productSpecificationModel = new ProductSpecificationModel();
+            $productSpecificationModel->delete_product_specification($id);
+
+            return redirect()->to(base_url('Inventory/product_specifications'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function purchase_invoices()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/purchaseInvoice';
+
+            $purchaseInvoiceModel = new PurchaseInvoiceModel();
+            $data['purchase_invoices'] = $purchaseInvoiceModel->get_purchase_invoices();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function create_purchase_invoice()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/createPurchaseInvoice';
+
+            $vendorModel = new InventoryModel();
+            $data['vendors'] = $vendorModel->getvendors();
+
+            $warehouseModel = new WarehouseModel();
+            $data['warehouses'] = $warehouseModel->get_warehouses();
+
+                return view('loggedinuser/index.php', $data);
+            } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function purchase_invoice_details($id)
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/detailsPurchaseInvoice';
+
+            $db = db_connect();
+            $query = $db->query('SELECT purchase_invoices.*, warehouses.name AS warehouse_name, vendor.name AS vendor_name FROM purchase_invoices JOIN warehouses ON purchase_invoices.warehouse_id = warehouses.id JOIN vendor ON purchase_invoices.vendor_id = vendor.id WHERE purchase_invoices.id = '.$id.';');        
+            $data['purchase_invoice'] = $query->getRow();
+
+            $db = db_connect();
+            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product ON purchase_invoice_items.product_id = product.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');        
+            $data['purchase_invoice_items'] = $query->getResult();
+
+            $db = db_connect();
+            $query = $db->query('SELECT SUM(purchase_invoice_items.total) AS total_amount FROM purchase_invoice_items WHERE purchase_invoice_id = '.$id.';');        
+            $data['purchase_invoice_total'] = $query->getRow();
+            
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function update_purchase_invoice()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/updatePurchaseInvoice';
+
+            $vendorModel = new InventoryModel();
+            $data['vendors'] = $vendorModel->getvendors();
+
+            $warehouseModel = new WarehouseModel();
+            $data['warehouses'] = $warehouseModel->get_warehouses();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function add_purchase_invoice()
+    {
+        if ($_SESSION['userdetails'] != null) {
+
+            $data = [];
+            $data['invoice_date'] = $_POST['invoice_date'];
+            $data['invoice_no'] = $_POST['invoice_no'];
+            $data['vendor_id'] = $_POST['vendor_id'];
+            $data['warehouse_id'] = $_POST['warehouse_id'];
+            
+            $purchaseInvoiceModel = new PurchaseInvoiceModel();
+            $purchaseInvoiceId = $purchaseInvoiceModel->add_purchase_invoice($data);
+
+            foreach ($_POST['manufacturer_id'] as $key => $value) {
+                $purchaseInvoiceItem = new PurchaseInvoiceItemModel();
+                $purchaseInvoiceItem->add_purchase_invoice_item([
+                    'purchase_invoice_id' => $purchaseInvoiceId,
+                    'manufacturer_id' => $_POST['manufacturer_id'][$key],
+                    'product_id' => $_POST['product_id'][$key],
+                    'quantity' => $_POST['quantity'][$key],
+                    'price' => $_POST['price'][$key],
+                    'gst' => $_POST['gst'][$key],
+                    'total' => $_POST['total'][$key],
+                ]);
+            }
+
+            return redirect()->to(base_url('Inventory/purchase_invoices'));
+
         } else {
             return redirect()->to(base_url('dashboard'));
         }

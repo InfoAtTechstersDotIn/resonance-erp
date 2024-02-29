@@ -171,6 +171,8 @@ if ($_SESSION['rights'] != null) : ?>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('master/buildings') ?>"><i class="fa fa-fighter-jet"></i> Building</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('master/floors') ?>"><i class="fa fa-fighter-jet"></i> Floor</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('master/rooms') ?>"><i class="fa fa-fighter-jet"></i> Room</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('master/areas') ?>"><i class="fa fa-fighter-jet"></i> Area</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('master/warehouses') ?>"><i class="fa fa-fighter-jet"></i> Warehouse</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('master/course') ?>"><i class="fa fa-fighter-jet"></i> Course</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('master/section') ?>"><i class="fa fa-fighter-jet"></i> Section</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('master/subject') ?>"><i class="fa fa-fighter-jet"></i> Subject</a></li>
@@ -198,9 +200,11 @@ if ($_SESSION['rights'] != null) : ?>
                         <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/vendor') ?>"><i class="fa fa-align-justify"></i>Vendor</a></li>
                         <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/productcategory') ?>"><i class="fa fa-align-justify"></i>Product Category</a></li>
                         <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/products') ?>"><i class="fa fa-indent"></i>Products</a></li>
+                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/product_specifications') ?>"><i class="fa fa-indent"></i>Product Specification</a></li>
                         <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/manufacturers') ?>"><i class="fa fa-indent"></i>Manufacturers</a></li>
                         <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/materialrequisitionforms') ?>"><i class="fa fa-indent"></i>Approved MaterialRequisition</a></li>
                         <li style="margin-left: 30px;"><a href="<?php echo base_url('Forms/poforms') ?>"><i class="fa fa-indent"></i>Purchase Order List</a></li>
+                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/purchase_invoice') ?>"><i class="fa fa-indent"></i>Purchase Invoice</a></li>
                         <?php endif; ?>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/reports') ?>"><i class="fa fa-outdent"></i>Inventory Report</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/details') ?>"><i class="fa fa-outdent"></i>Inventory Details</a></li>

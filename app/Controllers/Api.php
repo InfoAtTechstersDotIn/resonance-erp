@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 
+use App\Models\InventoryModel;
+use App\Models\ManufacturerModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\ApiModel;
@@ -4456,5 +4458,29 @@ class Api extends ResourceController
         curl_close($ch);
       
         return $response;
+    }
+
+    public function get_manufacturers()
+    {
+        $manufacturerModel = new ManufacturerModel();
+        $data = $manufacturerModel->getManufacturers();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Manufacturers successfully fetched",
+            'data' => $data
+        ]);
+    }
+
+    public function get_products()
+    {
+        $productModel = new InventoryModel();
+        $data = $productModel->getproducts();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Products successfully fetched",
+            'data' => $data
+        ]);
     }
 }

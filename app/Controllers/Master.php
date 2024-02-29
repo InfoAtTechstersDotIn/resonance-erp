@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\AdminModel;
+use App\Models\AreaModel;
 use App\Models\BuildingModel;
 use App\Models\EmailModel;
 use App\Models\FloorModel;
@@ -11,6 +12,7 @@ use App\Models\MasterModel;
 use App\Models\PaymentsModel;
 use App\Models\RoomModel;
 use App\Models\UsersModel;
+use App\Models\WarehouseModel;
 
 class Master extends BaseController
 {
@@ -565,6 +567,123 @@ class Master extends BaseController
             $roomModel->delete_room($id);
 
             return redirect()->to(base_url('Master/rooms'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+
+    public function areas()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Master/area';
+
+            $areaModel = new AreaModel();
+            $data['areas'] = $areaModel->get_areas();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function addarea()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['name'] = $_POST['name'];
+
+            $areaModel = new AreaModel();
+            $areaModel->add_area($data);
+
+            return redirect()->to(base_url('Master/areas'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function updatearea()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $area_id = $_POST['area_id'];
+            $data['name'] = $_POST['name'];
+
+            $areaModel = new AreaModel();
+            $areaModel->update_area($area_id, $data);
+
+            return redirect()->to(base_url('Master/areas'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function deletearea()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $area_id = $_GET['area_id'];
+
+            $areaModel = new AreaModel();
+            $areaModel->delete_area($area_id);
+
+            return redirect()->to(base_url('Master/areas'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function warehouses()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Master/warehouse';
+
+            $warehouseModel = new WarehouseModel();
+            $data['warehouses'] = $warehouseModel->get_warehouses();
+
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function addwarehouse()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['name'] = $_POST['name'];
+            $data['address'] = $_POST['address'];
+
+            $warehouseModel = new WarehouseModel();
+            $warehouseModel->add_warehouse($data);
+
+            return redirect()->to(base_url('Master/warehouses'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function updatewarehouse()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $warehouse_id = $_POST['warehouse_id'];
+            $data['name'] = $_POST['name'];
+            $data['address'] = $_POST['address'];
+
+            $warehouseModel = new WarehouseModel();
+            $warehouseModel->update_warehouse($warehouse_id, $data);
+
+            return redirect()->to(base_url('Master/warehouses'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function deletewarehouse()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $warehouse_id = $_POST['warehouse_id'];
+
+            $warehouseModel = new WarehouseModel();
+            $warehouseModel->delete_warehouse($warehouse_id);
+
+            return redirect()->to(base_url('Master/warehouses'));
         } else {
             return redirect()->to(base_url('dashboard'));
         }
