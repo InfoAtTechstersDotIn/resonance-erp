@@ -11,6 +11,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Product Code</th>
                                     <th>Category</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
@@ -20,8 +21,9 @@
                                 <?php foreach ($product_specifications as $result) : ?>
                                 <tr>
                                     <td><?php echo $result->name ?></td>
+                                    <td><?php echo $result->code ?></td>
                                     <td><?php echo $result->category_name ?></td>
-                                    <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->name ?>', '<?php echo  $result->category_id ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
+                                    <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->name ?>', '<?php echo  $result->code ?>', '<?php echo  $result->category_id ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
                                     <td><i onclick="remove('<?php echo $result->id ?>')" class='fa fa-trash'></i></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -46,6 +48,10 @@
                                     <div class="col-md-12">
                                         <label class="text-uppercase text-sm">Specification Name</label>
                                         <input type="text" placeholder="Specification Name" name="name" class="form-control mb" required>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="text-uppercase text-sm">Product Code</label>
+                                        <input type="text" placeholder="Product Code" name="code" class="form-control mb" required>
                                     </div>
                                     <div class="col-md-12">
                                         <select name="category_id" style="width: 100%;" class="form-control mb">
@@ -82,6 +88,10 @@
                                         <input type="hidden" id="product_specification_id" name="product_specification_id" />
                                     </div>
                                     <div class="col-md-12">
+                                        <label class="text-uppercase text-sm">Product Code</label>
+                                        <input type="text" placeholder="Product Code" name="code" id="code" class="form-control mb" required>
+                                    </div>
+                                    <div class="col-md-12">
                                         <select id="category_id" name="category_id" style="width: 100%;" class="form-control mb">
                                             <option value="">Select Category</option>
                                             <?php
@@ -104,9 +114,10 @@
 
 <script>
 
-    function edit(id, name, category_id) {
+    function edit(id, name, code, category_id) {
         $('#product_specification_id').val(id);
         $('#name').val(name);
+        $('#code').val(code);
         $('#category_id').val(category_id);
     }
 

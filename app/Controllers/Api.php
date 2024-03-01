@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\InventoryModel;
 use App\Models\ManufacturerModel;
+use App\Models\ProductSpecificationModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use App\Models\ApiModel;
@@ -4480,6 +4481,18 @@ class Api extends ResourceController
         return $this->respond([
             'status' => true,
             'message' => "Products successfully fetched",
+            'data' => $data
+        ]);
+    }
+
+    public function get_product_specifications()
+    {
+        $productSpecificationModel = new ProductSpecificationModel();
+        $data = $productSpecificationModel->get_product_specifications();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Product specifications successfully fetched",
             'data' => $data
         ]);
     }

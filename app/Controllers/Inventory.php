@@ -1989,6 +1989,7 @@ class Inventory extends BaseController
         if ($_SESSION['userdetails'] != null) {
             
             $data['name'] = $_POST['name'];
+            $data['code'] = $_POST['code'];
             $data['category_id'] = $_POST['category_id'];
 
             $productSpecificationModel = new ProductSpecificationModel();
@@ -2005,6 +2006,7 @@ class Inventory extends BaseController
         if ($_SESSION['userdetails'] != null) {
             $product_specification_id = $_POST['product_specification_id'];
             $data['name'] = $_POST['name'];
+            $data['code'] = $_POST['code'];
             $data['category_id'] = $_POST['category_id'];
 
             $productSpecificationModel = new ProductSpecificationModel();
@@ -2071,7 +2073,7 @@ class Inventory extends BaseController
             $data['purchase_invoice'] = $query->getRow();
 
             $db = db_connect();
-            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product ON purchase_invoice_items.product_id = product.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');        
+            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product_specifications ON purchase_invoice_items.product_id = product_specifications.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');        
             $data['purchase_invoice_items'] = $query->getResult();
 
             $db = db_connect();
@@ -2115,6 +2117,14 @@ class Inventory extends BaseController
             $purchaseInvoiceId = $purchaseInvoiceModel->add_purchase_invoice($data);
 
             foreach ($_POST['manufacturer_id'] as $key => $value) {
+
+                $db = db_connect();
+                $query = $db->query('SELECT COUNT(*) AS product_count FROM purchase_invoice_items WHERE product_id = '.$_POST['product_id'][$key].';');        
+                $product_count = $query->getRow()->product_count;
+                
+                $query = $db->query('SELECT * FROM product_specifications WHERE id = '.$_POST['product_id'][$key].';');        
+                $product_code = $query->getRow()->code;
+
                 $purchaseInvoiceItem = new PurchaseInvoiceItemModel();
                 $purchaseInvoiceItem->add_purchase_invoice_item([
                     'purchase_invoice_id' => $purchaseInvoiceId,
@@ -2124,6 +2134,8 @@ class Inventory extends BaseController
                     'price' => $_POST['price'][$key],
                     'gst' => $_POST['gst'][$key],
                     'total' => $_POST['total'][$key],
+                    'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
+                    'product_serial_no' => $product_code . "-" . $product_count
                 ]);
             }
 

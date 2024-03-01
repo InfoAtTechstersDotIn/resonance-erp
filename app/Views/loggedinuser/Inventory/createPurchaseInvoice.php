@@ -72,14 +72,14 @@
         console.error(error);
     });
 
-    let products = undefined;
+    let product_specifications = undefined;
 
-    fetch('<?php echo base_url('api/get_products') ?>')
+    fetch('<?php echo base_url('api/get_product_specifications') ?>')
     .then(response => {
         return response.json();
     })
     .then(data => {    
-        products = data.data
+        product_specifications = data.data
     })
     .catch(error => {
         console.error(error);
@@ -119,10 +119,10 @@
         productOption.innerHTML = "Select Product";
         productInput.appendChild(productOption);
 
-        products.forEach((element,index) => {
+        product_specifications.forEach((element,index) => {
             let option = document.createElement('option');
             option.value = element.id;
-            option.innerHTML = element.productname;
+            option.innerHTML = element.name;
             if (parseInt(product_id) == parseInt(element.id)) {
                 option.selected = true;
             }
@@ -137,7 +137,7 @@
         priceInput.required = true;
         priceInput.min = 1;
         priceInput.max = 10000000;
-        priceInput.placeholder = "Enter Price";
+        priceInput.placeholder = "Price";
         priceInput.onkeyup = (event) => {
             let gst_percentage = event.target.parentNode.querySelector('.gst_input').value
             let gross_amount = event.target.value * event.target.parentNode.querySelector('.quantity_input').value;
@@ -146,11 +146,20 @@
             calculateTotal();
         };
 
+        let manufacturerSerialNoInput = document.createElement('input');
+        manufacturerSerialNoInput.type = "text";
+        manufacturerSerialNoInput.className = "form-control mb manufacturer_input";
+        manufacturerSerialNoInput.name = "manufacturer_serial_no[]";
+        manufacturerSerialNoInput.required = true;
+        manufacturerSerialNoInput.minLength = 1;
+        manufacturerSerialNoInput.maxLength = 250;
+        manufacturerSerialNoInput.placeholder = "Manufacturer Serial No";
+
         let quantityInput = document.createElement('input');
-        quantityInput.type = "number";
+        quantityInput.type = "hidden";
         quantityInput.className = "form-control mb quantity_input";
         quantityInput.name = "quantity[]";
-        quantityInput.value = quantity;
+        quantityInput.value = 1;
         quantityInput.required = true;
         quantityInput.min = 1;
         quantityInput.max = 10000;
@@ -199,7 +208,7 @@
             event.target.parentNode.remove();
         }
 
-        parentDiv.append(manufacturerInput, productInput, priceInput, quantityInput, gstInput, totalInput, remove);
+        parentDiv.append(manufacturerInput, productInput, priceInput, manufacturerSerialNoInput, quantityInput, gstInput, totalInput, remove);
         document.getElementById('purchase-invoice-items-input').appendChild(parentDiv);
     }
 

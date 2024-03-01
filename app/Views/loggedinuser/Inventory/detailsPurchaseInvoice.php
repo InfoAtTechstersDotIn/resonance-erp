@@ -34,7 +34,9 @@
                             <td>Manufacturer</td>
                             <td>Product</td>
                             <td>Price</td>
-                            <td>Quantity</td>
+                            <!-- <td>Quantity</td> -->
+                            <td>Manufacturer Serial No</td>
+                            <td>Product Serial No</td>
                             <td>GST Percentage</td>
                             <td>Total</td>
                         </tr>
@@ -44,7 +46,9 @@
                                 <td><?php echo $item->manufacturer_name ?></td>
                                 <td><?php echo $item->product_name ?></td>
                                 <td><?php echo $item->price ?></td>
-                                <td><?php echo $item->quantity ?></td>
+                                <!-- <td><?php echo $item->quantity ?></td> -->
+                                <td><?php echo $item->manufacturer_serial_no ?></td>
+                                <td><?php echo $item->product_serial_no ?></td>
                                 <td><?php echo $item->gst ?></td>
                                 <td><?php echo $item->total ?></td>
                             </tr>
