@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use PHPUnit\Framework\MockObject\Stub\ReturnArgument;
 
 class PurchaseInvoiceItemModel extends Model
 {
@@ -31,6 +32,21 @@ class PurchaseInvoiceItemModel extends Model
         $builder->where('id', $id);
         $builder->delete();
         $db->close();
+    }
+
+    public function mark_item_as_allocated($purchase_invoice_item_id)
+    {
+        $db = db_connect();
+        $builder = $db->table('purchase_invoice_items');
+        $builder->where('id', $purchase_invoice_item_id);
+        $result = $builder->update([
+            'status' => 'allocated'
+        ]);
+        
+        $query = $db->query("SELECT * FROM purchase_invoice_items WHERE id = ".$purchase_invoice_item_id.";");
+        $data =  $query->getRow();
+        $db->close();
+        return $data;
     }
 
 }

@@ -4496,4 +4496,48 @@ class Api extends ResourceController
             'data' => $data
         ]);
     }
+
+    public function get_product_specification_by_id($id)
+    {
+        $db = db_connect();
+        $query = $db->query("SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product_specifications ON purchase_invoice_items.product_id = product_specifications.id WHERE purchase_invoice_items.product_id = ".$id." AND purchase_invoice_items.status = 'unallocated';");        
+        $data['invoice_items'] = $query->getResult();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Invoice items successfully fetched",
+            'data' => $data
+        ]);
+    }
+
+    public function filter_products()
+    {
+        
+        $db = db_connect();  
+
+        $id = $_GET['id'];
+
+        switch ($_GET['type']) {
+            case 'BRANCH':
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.branch_id = $id");          
+                break;
+            case 'BUILDING':
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.building_id = $id");          
+                break;
+            case 'FLOOR':
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.floor_id = $id");          
+                break;
+            case 'ROOM':
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.room_id = $id");          
+                break;
+        }        
+
+        $data = $query->getResult();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Items successfully fetched",
+            'data' => $data
+        ]);
+    }
 }

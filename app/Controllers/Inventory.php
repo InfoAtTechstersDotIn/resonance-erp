@@ -1,16 +1,23 @@
 <?php
 
+
 namespace App\Controllers;
 
+use App\Models\AllocatedAssetsModel;
+use App\Models\BuildingModel;
+use App\Models\FloorModel;
 use App\Models\HelperModel;
 use App\Models\InventoryModel;
 use App\Models\ManufacturerModel;
 use App\Models\ProductSpecificationModel;
 use App\Models\PurchaseInvoiceItemModel;
 use App\Models\PurchaseInvoiceModel;
+use App\Models\RoomModel;
 use App\Models\UsersModel;
 use App\Models\ReservationModel;
 use App\Models\WarehouseModel;
+
+require_once( APPPATH . 'ThirdParty/phpqrcode/qrlib.php');
 
 class Inventory extends BaseController
 {
@@ -2126,7 +2133,7 @@ class Inventory extends BaseController
                 $product_code = $query->getRow()->code;
 
                 $purchaseInvoiceItem = new PurchaseInvoiceItemModel();
-                $purchaseInvoiceItem->add_purchase_invoice_item([
+                $purchase_invoice_item_id = $purchaseInvoiceItem->add_purchase_invoice_item([
                     'purchase_invoice_id' => $purchaseInvoiceId,
                     'manufacturer_id' => $_POST['manufacturer_id'][$key],
                     'product_id' => $_POST['product_id'][$key],
@@ -2146,4 +2153,166 @@ class Inventory extends BaseController
         }
     }
 
+    public function asset_allocation()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/assetAllocation';
+
+            $productSpecificationModel = new ProductSpecificationModel();
+            $data['product_specifications'] = $productSpecificationModel->get_product_specifications();
+
+            $inventoryModel = new InventoryModel();
+            $data['categories'] = $inventoryModel->getproductcategorys();
+
+            $helperModel = new HelperModel();
+            $data['lookups'] = $helperModel->get_lookups();
+
+            $floorModel = new BuildingModel();
+            $data['buildings'] = $floorModel->get_all_buildings();
+
+            $floorModel = new FloorModel();
+            $data['floors'] = $floorModel->get_all_floors();
+
+
+            $roomModel = new RoomModel();
+            $data['rooms'] = $roomModel->get_rooms();
+
+
+                return view('loggedinuser/index.php', $data);
+            } 
+            else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function add_asset_allocation()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            
+            foreach ($_POST['product_id'] as $key => $value) {
+                $purchaseInvoiceItemModel = new PurchaseInvoiceItemModel();
+                $result = $purchaseInvoiceItemModel->mark_item_as_allocated($value);
+
+                $data = [];
+                $data['product_id'] = $result->product_id;
+                $data['manufacturer_id'] = $result->manufacturer_id;
+                $data['manufacturer_serial_no'] = $result->manufacturer_serial_no;
+                $data['product_serial_no'] = $result->product_serial_no;
+                $data['purchase_invoice_item_id'] = $value;
+                $data['branch_id'] = $_POST['branch_id'];
+                $data['building_id'] = $_POST['building_id'];
+                $data['floor_id'] = $_POST['floor_id'];
+                $data['room_id'] = $_POST['room_id'];
+                $path = 'qrcode/'.rand(9999999,100000000).'.png';
+                $data['qr_image_path'] = "public/$path";
+
+                $qr_data = [
+                    'product_id' => $result->product_id,
+                    'manufacturer_serial_no' =>  $result->manufacturer_serial_no,
+                    'product_serial_no' =>  $result->product_serial_no,
+                    'purchase_invoice_item_id' => $value,
+                    'branch_id' => $_POST['branch_id'],
+                    'building_id' => $_POST['building_id'],
+                    'floor_id' => $_POST['floor_id'],
+                    'room_id' => $_POST['room_id'],
+                ];
+
+                \QRcode::png(json_encode($qr_data), FCPATH . $path);
+
+                $model = new AllocatedAssetsModel();
+                $model->add_allocated_assets($data);
+
+            }
+            
+            return redirect()->to(base_url('Inventory/asset_allocation'));
+        } 
+        else {
+            return redirect()->to(base_url('dashboard'));    
+        }
+    }
+
+    public function asset_transfer()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/assetTransfer';
+
+            $helperModel = new HelperModel();
+            $data['lookups'] = $helperModel->get_lookups();
+
+            $floorModel = new BuildingModel();
+            $data['buildings'] = $floorModel->get_all_buildings();
+
+            $floorModel = new FloorModel();
+            $data['floors'] = $floorModel->get_all_floors();
+
+            $roomModel = new RoomModel();
+            $data['rooms'] = $roomModel->get_rooms();
+
+                return view('loggedinuser/index.php', $data);
+            } 
+            else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function update_asset_transfer()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/assetTransfer';
+
+                foreach ($_POST['allocated_id'] as $key => $value) {
+
+                    $data = [];
+                    $data['branch_id'] = $_POST['branch_id_to'];
+                    $data['building_id'] = $_POST['building_id_to'];
+                    $data['floor_id'] = $_POST['floor_id_to'];
+                    $data['room_id'] = $_POST['room_id_to'];
+
+                    $model = new AllocatedAssetsModel();
+                    $model->update_allocated_assets($value, $data);
+
+                }
+
+                return redirect()->to(base_url('Inventory/asset_transfer'));
+            } 
+            else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function asset_report()
+    {
+        if ($_SESSION['userdetails'] != null) {
+                $data['page_name'] = 'Inventory/assetReport';
+
+                $helperModel = new HelperModel();
+                $data['lookups'] = $helperModel->get_lookups();
+
+                $floorModel = new BuildingModel();
+                $data['buildings'] = $floorModel->get_all_buildings();
+
+                $floorModel = new FloorModel();
+                $data['floors'] = $floorModel->get_all_floors();
+
+                $roomModel = new RoomModel();
+                $data['rooms'] = $roomModel->get_rooms();
+
+                return view('loggedinuser/index.php', $data);
+            } 
+            else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function generate_qr() 
+    {
+        $text = '{
+            color: "red",
+            value: "#f00"
+        }';
+        \QRcode::png($text, FCPATH . ('qrcode/image.png'));
+
+        echo FCPATH . ('qrcode/image.png');
+
+    }
 }

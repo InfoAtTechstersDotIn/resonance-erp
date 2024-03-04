@@ -197,15 +197,18 @@ if ($_SESSION['rights'] != null) : ?>
                 </li>
                 <ul class="sub-menu collapse" id="Inventory">
                     <?php if ($_SESSION['rights'][array_search('WarehouseManager', array_column($_SESSION['rights'], 'operationname'))]->_view == 1) : ?>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/vendor') ?>"><i class="fa fa-align-justify"></i>Vendor</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/productcategory') ?>"><i class="fa fa-align-justify"></i>Product Category</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/products') ?>"><i class="fa fa-indent"></i>Products</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/product_specifications') ?>"><i class="fa fa-indent"></i>Product Specification</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/manufacturers') ?>"><i class="fa fa-indent"></i>Manufacturers</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/materialrequisitionforms') ?>"><i class="fa fa-indent"></i>Approved MaterialRequisition</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Forms/poforms') ?>"><i class="fa fa-indent"></i>Purchase Order List</a></li>
-                        <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/purchase_invoice') ?>"><i class="fa fa-indent"></i>Purchase Invoice</a></li>
-                        <?php endif; ?>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/vendor') ?>"><i class="fa fa-align-justify"></i>Vendor</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/productcategory') ?>"><i class="fa fa-align-justify"></i>Product Category</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/products') ?>"><i class="fa fa-indent"></i>Products</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/product_specifications') ?>"><i class="fa fa-indent"></i>Product Specification</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/manufacturers') ?>"><i class="fa fa-indent"></i>Manufacturers</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/materialrequisitionforms') ?>"><i class="fa fa-indent"></i>Approved MaterialRequisition</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Forms/poforms') ?>"><i class="fa fa-indent"></i>Purchase Order List</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/purchase_invoices') ?>"><i class="fa fa-indent"></i>Purchase Invoice</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_allocation') ?>"><i class="fa fa-indent"></i>Asset Allocation</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_transfer') ?>"><i class="fa fa-indent"></i>Asset Transfer</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_report') ?>"><i class="fa fa-indent"></i>Asset Report</a></li>
+                    <?php endif; ?>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/reports') ?>"><i class="fa fa-outdent"></i>Inventory Report</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/details') ?>"><i class="fa fa-outdent"></i>Inventory Details</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/studentdistribute') ?>"><i class="fa fa-outdent"></i>Distribute</a></li>
