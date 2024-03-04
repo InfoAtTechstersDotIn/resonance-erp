@@ -18,9 +18,10 @@ class AllocatedAssetsModel extends Model
     {
         $db = db_connect();
         $builder = $db->table('allocated_assets');
-        $builder->insert($data);
-
+        $result = $builder->insert($data);
+        $insertId = $db->insertID();
         $db->close();
+        return $insertId;
     }
 
     public function update_allocated_assets($allocated_asset_id, $data)

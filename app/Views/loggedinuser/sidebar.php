@@ -208,6 +208,7 @@ if ($_SESSION['rights'] != null) : ?>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_allocation') ?>"><i class="fa fa-indent"></i>Asset Allocation</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_transfer') ?>"><i class="fa fa-indent"></i>Asset Transfer</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_report') ?>"><i class="fa fa-indent"></i>Asset Report</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_audit') ?>"><i class="fa fa-indent"></i>Asset Audit</a></li>
                     <?php endif; ?>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/reports') ?>"><i class="fa fa-outdent"></i>Inventory Report</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/details') ?>"><i class="fa fa-outdent"></i>Inventory Details</a></li>

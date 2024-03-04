@@ -4,6 +4,7 @@
 namespace App\Controllers;
 
 use App\Models\AllocatedAssetsModel;
+use App\Models\AssetAuditModel;
 use App\Models\BuildingModel;
 use App\Models\FloorModel;
 use App\Models\HelperModel;
@@ -2206,21 +2207,17 @@ class Inventory extends BaseController
                 $path = 'qrcode/'.rand(9999999,100000000).'.png';
                 $data['qr_image_path'] = "public/$path";
 
+                $model = new AllocatedAssetsModel();
+                $allocated_asset_id = $model->add_allocated_assets($data);
+
                 $qr_data = [
                     'product_id' => $result->product_id,
                     'manufacturer_serial_no' =>  $result->manufacturer_serial_no,
                     'product_serial_no' =>  $result->product_serial_no,
-                    'purchase_invoice_item_id' => $value,
-                    'branch_id' => $_POST['branch_id'],
-                    'building_id' => $_POST['building_id'],
-                    'floor_id' => $_POST['floor_id'],
-                    'room_id' => $_POST['room_id'],
+                    'allocated_asset_id' => $allocated_asset_id
                 ];
 
                 \QRcode::png(json_encode($qr_data), FCPATH . $path);
-
-                $model = new AllocatedAssetsModel();
-                $model->add_allocated_assets($data);
 
             }
             
@@ -2304,15 +2301,81 @@ class Inventory extends BaseController
         }
     }
 
-    public function generate_qr() 
+    public function asset_audit()
     {
-        $text = '{
-            color: "red",
-            value: "#f00"
-        }';
-        \QRcode::png($text, FCPATH . ('qrcode/image.png'));
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/assetAudit';
 
-        echo FCPATH . ('qrcode/image.png');
+            $helperModel = new HelperModel();
+            $data['lookups'] = $helperModel->get_lookups();
 
+
+            $assetAuditModel = new AssetAuditModel();
+            $data['asset_audits'] = $assetAuditModel->get_asset_audits();
+
+            return view('loggedinuser/index.php', $data);
+        } 
+        else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function add_asset_audit()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            
+            $data['branch_id'] = $_POST['branch_id'];
+            $data['date'] = $_POST['date'];
+            $data['created_by'] = $_SESSION['userdetails']->userid;
+            $data['remark'] = $_POST['remark'];
+
+            $assetAuditModel = new AssetAuditModel();
+            $assetAuditId = $assetAuditModel->add_asset_audit($data);
+
+            $db = db_connect();
+            $query = $db->query('SELECT * FROM allocated_assets WHERE branch_id = '.$data['branch_id'].';');     
+
+            foreach ($query->getResult() as $key => $value) {
+
+                $item = [];
+                $item['asset_audit_id'] = $assetAuditId;
+                $item['allocated_asset_id'] = $value->id;
+                $item['status'] = 'pending';
+
+                $assetAuditModel = new AssetAuditModel();
+                $assetAuditModel->add_asset_audit_item($item);
+            }
+
+            return redirect()->to(base_url('Inventory/asset_audit'));
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function asset_audit_details($id)
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/detailsAssetAudit';
+
+            $db = db_connect();
+            $query = $db->query('SELECT asset_audits.*, branchlookup.branchname FROM asset_audits JOIN branchlookup ON asset_audits.branch_id = branchlookup.branchid WHERE asset_audits.id = '.$id.';'); 
+            $data['asset_audit'] = $query->getRow();
+
+            $db = db_connect();
+            $query = $db->query("SELECT * FROM asset_audit_items 
+                        JOIN allocated_assets ON asset_audit_items.allocated_asset_id = allocated_assets.id
+                        JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE status = 'scanned' AND asset_audit_id =".$id.";");        
+            $data['scanned_items'] = $query->getResult();
+
+            $db = db_connect();
+            $query = $db->query("SELECT * FROM asset_audit_items 
+                        JOIN allocated_assets ON asset_audit_items.allocated_asset_id = allocated_assets.id
+                        JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE status = 'pending' AND asset_audit_id =".$id.";");        
+            $data['pending_items'] = $query->getResult();
+            
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
     }
 }

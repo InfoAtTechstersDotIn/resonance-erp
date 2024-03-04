@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+use App\Models\AssetAuditModel;
 use App\Models\InventoryModel;
 use App\Models\ManufacturerModel;
 use App\Models\ProductSpecificationModel;
@@ -4538,6 +4539,18 @@ class Api extends ResourceController
             'status' => true,
             'message' => "Items successfully fetched",
             'data' => $data
+        ]);
+    }
+
+    public function scanned_asset_audit_item($id)
+    {
+        $assetAuditItemModel = new AssetAuditModel();
+        $assetAuditItemModel->update_asset_audit_item($id);
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Item successfully updated",
+            'data' => null
         ]);
     }
 }
