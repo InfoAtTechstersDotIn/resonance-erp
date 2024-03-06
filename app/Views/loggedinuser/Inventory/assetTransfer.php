@@ -42,7 +42,7 @@
                             </div>
                                     
                             <div class="col-md-12">
-                                <select onchange="handleGetItem(event)" id="room_id_from" name="room_id_from" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleGetItem('ROOM', event)" id="room_id_from" name="room_id_from" style="width: 100%;" class="form-control mb">
                                     <option value="">Select Room</option>
                                     <?php foreach ($rooms as $room) : ?>
                                         <option style="display: none;" data-room-floor-id="<?php echo $room->floor_id; ?>" value="<?php echo $room->id; ?>"><?php echo $room->name; ?></option>
@@ -205,16 +205,18 @@
         }
     }
 
-    function handleGetItem(event) {
+    function handleGetItem(type, event) {
 
         document.getElementById('items-list-table').innerHTML = '';
 
-        fetch('<?php echo base_url('api/get_products_by_room') ?>/' + event.target.value)
+        fetch(`<?php echo base_url('api/filter_products') ?>?type=${type}&id=${event.target.value}`)
         .then(response => {
             return response.json();
         })
         .then(data => {    
             
+            console.log(data.data);
+
             data.data.forEach((element,index) => {
 
                 let parentDiv = document.createElement('tr');
@@ -234,7 +236,28 @@
                 checkbox.type = "checkbox";
                 checkbox.name = "allocated_id[]";
                 checkbox.value = element.id;
-                action.append(checkbox);
+                
+                let product_id = document.createElement('input');
+                product_id.type = "hidden";
+                product_id.name = "product_id[]";
+                product_id.value = element.product_id;
+                
+                let purchase_invoice_item_id = document.createElement('input');
+                purchase_invoice_item_id.type = "hidden";
+                purchase_invoice_item_id.name = "purchase_invoice_item_id[]";
+                purchase_invoice_item_id.value = element.purchase_invoice_item_id;
+                
+                let manufacturer_serial_no = document.createElement('input');
+                manufacturer_serial_no.type = "hidden";
+                manufacturer_serial_no.name = "manufacturer_serial_no[]";
+                manufacturer_serial_no.value = element.manufacturer_serial_no;
+                
+                let product_serial_no_input = document.createElement('input');
+                product_serial_no_input.type = "hidden";
+                product_serial_no_input.name = "product_serial_no[]";
+                product_serial_no_input.value = element.product_serial_no;
+
+                action.append(checkbox,product_id, purchase_invoice_item_id, manufacturer_serial_no, product_serial_no_input);
                 
                 parentDiv.append(product_specification_name, manufacturer_name, product_serial_no, action);
                 document.getElementById('items-list-table').appendChild(parentDiv);

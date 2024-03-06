@@ -4,6 +4,7 @@
 namespace App\Controllers;
 
 use App\Models\AllocatedAssetsModel;
+use App\Models\AssetAllocationHistory;
 use App\Models\AssetAuditModel;
 use App\Models\BuildingModel;
 use App\Models\FloorModel;
@@ -2268,6 +2269,25 @@ class Inventory extends BaseController
                     $model = new AllocatedAssetsModel();
                     $model->update_allocated_assets($value, $data);
 
+                    $history_data = [
+                        'purchase_invoice_item_id' => $_POST['purchase_invoice_item_id'][$key],
+                        'product_id' =>  $_POST['product_id'][$key],
+                        'from_branch_id' => $_POST['branch_id_from'],
+                        'from_building_id' => $_POST['building_id_from'],
+                        'from_floor_id' => $_POST['floor_id_from'],
+                        'from_room_id' => $_POST['room_id_from'],
+                        'to_branch_id' => $_POST['branch_id_to'],
+                        'to_building_id' => $_POST['building_id_to'],
+                        'to_floor_id' => $_POST['floor_id_to'],
+                        'to_room_id' => $_POST['room_id_to'],
+                        'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
+                        'product_serial_no' => $_POST['product_serial_no'][$key],
+                        'manufacturer_id' => null
+                    ];
+
+                    $model = new AssetAllocationHistory();
+                    $model->add_asset_allocation_history($history_data);
+
                 }
 
                 return redirect()->to(base_url('Inventory/asset_transfer'));
@@ -2308,7 +2328,6 @@ class Inventory extends BaseController
 
             $helperModel = new HelperModel();
             $data['lookups'] = $helperModel->get_lookups();
-
 
             $assetAuditModel = new AssetAuditModel();
             $data['asset_audits'] = $assetAuditModel->get_asset_audits();
