@@ -1986,6 +1986,7 @@ class Inventory extends BaseController
 
             $inventoryModel = new InventoryModel();
             $data['categories'] = $inventoryModel->getproductcategorys();
+            $data['producttype'] = $inventoryModel->getproducttype();
 
             return view('loggedinuser/index.php', $data);
         } else {
@@ -2000,7 +2001,8 @@ class Inventory extends BaseController
             $data['name'] = $_POST['name'];
             $data['code'] = $_POST['code'];
             $data['category_id'] = $_POST['category_id'];
-
+            $data['product_type_id'] = $_POST['product_type_id'];
+ 
             $productSpecificationModel = new ProductSpecificationModel();
             $productSpecificationModel->add_product_specification($data);
 
@@ -2017,6 +2019,7 @@ class Inventory extends BaseController
             $data['name'] = $_POST['name'];
             $data['code'] = $_POST['code'];
             $data['category_id'] = $_POST['category_id'];
+            $data['product_type_id'] = $_POST['product_type_id'];
 
             $productSpecificationModel = new ProductSpecificationModel();
             $productSpecificationModel->update_product_specification($product_specification_id, $data);

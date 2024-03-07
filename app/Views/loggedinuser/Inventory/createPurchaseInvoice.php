@@ -113,16 +113,34 @@
         productInput.className = "form-control mb";
         productInput.name = "product_id[]";
         productInput.required = true;
+        productInput.onchange = (event) => {
+            
+        }
 
         let productOption = document.createElement('option');
         productOption.value = "";
         productOption.innerHTML = "Select Product";
         productInput.appendChild(productOption);
+        productInput.onchange = (event) => {
+            if ($(event.target).find(':selected').data('product-type') == 'consumable') {
+                event.target.parentNode.querySelector('.manufacturer_input').setAttribute('type', 'hidden');
+                event.target.parentNode.querySelector('.quantity_input').setAttribute('type', 'number');
+            }
+            if ($(event.target).find(':selected').data('product-type') == 'asset') {
+                event.target.parentNode.querySelector('.manufacturer_input').setAttribute('type', 'text');
+                event.target.parentNode.querySelector('.quantity_input').setAttribute('type', 'hidden');
+            }
+            if ($(event.target).find(':selected').data('product-type') == 'set') {
+                event.target.parentNode.querySelector('.manufacturer_input').setAttribute('type', 'text');
+                event.target.parentNode.querySelector('.quantity_input').setAttribute('type', 'hidden');
+            }
+        }
 
         product_specifications.forEach((element,index) => {
             let option = document.createElement('option');
             option.value = element.id;
             option.innerHTML = element.name;
+            option.setAttribute('data-product-type',element.product_type);
             if (parseInt(product_id) == parseInt(element.id)) {
                 option.selected = true;
             }
@@ -150,7 +168,7 @@
         manufacturerSerialNoInput.type = "text";
         manufacturerSerialNoInput.className = "form-control mb manufacturer_input";
         manufacturerSerialNoInput.name = "manufacturer_serial_no[]";
-        manufacturerSerialNoInput.required = true;
+        // manufacturerSerialNoInput.required = true;
         manufacturerSerialNoInput.minLength = 1;
         manufacturerSerialNoInput.maxLength = 250;
         manufacturerSerialNoInput.placeholder = "Manufacturer Serial No";

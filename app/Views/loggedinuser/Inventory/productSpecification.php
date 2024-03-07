@@ -13,6 +13,7 @@
                                     <th>Name</th>
                                     <th>Product Code</th>
                                     <th>Category</th>
+                                    <th>Type</th>
                                     <th>Edit</th>
                                     <th>Delete</th>
                                 </tr>
@@ -23,7 +24,8 @@
                                     <td><?php echo $result->name ?></td>
                                     <td><?php echo $result->code ?></td>
                                     <td><?php echo $result->category_name ?></td>
-                                    <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->name ?>', '<?php echo  $result->code ?>', '<?php echo  $result->category_id ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
+                                    <td><?php echo $result->product_type ?></td>
+                                    <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->name ?>', '<?php echo  $result->code ?>', '<?php echo  $result->category_id ?>', '<?php echo  $result->product_type_id ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
                                     <td><i onclick="remove('<?php echo $result->id ?>')" class='fa fa-trash'></i></td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -58,6 +60,14 @@
                                             <option value="">Select Category</option>
                                             <?php foreach ($categories as $category) : ?>
                                                 <option value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <select name="product_type_id" style="width: 100%;" class="form-control mb" >
+                                            <option value="">Select Product Type</option>
+                                            <?php foreach ($producttype as $type) : ?>
+                                                <option value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -100,6 +110,14 @@
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
+                                    <div class="col-md-12">
+                                        <select id="product_type_id" name="product_type_id" style="width: 100%;" class="form-control mb" >
+                                            <option value="">Select Product Type</option>
+                                            <?php foreach ($producttype as $type) : ?>
+                                                <option value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
                                 </div>
                                 <br/>
                                 <button type="submit" class="btn btn-primary">Update Product Specification</button>
@@ -114,11 +132,12 @@
 
 <script>
 
-    function edit(id, name, code, category_id) {
+    function edit(id, name, code, category_id, product_type_id) {
         $('#product_specification_id').val(id);
         $('#name').val(name);
         $('#code').val(code);
         $('#category_id').val(category_id);
+        $('#product_type_id').val(product_type_id);
     }
 
     function remove(id) {
