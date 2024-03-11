@@ -4490,7 +4490,7 @@ class Api extends ResourceController
     {
         $productSpecificationModel = new ProductSpecificationModel();
         $data = $productSpecificationModel->get_product_specifications();
-
+        
         return $this->respond([
             'status' => true,
             'message' => "Product specifications successfully fetched",
@@ -4498,10 +4498,23 @@ class Api extends ResourceController
         ]);
     }
 
+    public function get_product()
+    {
+        $db = db_connect();
+        $query = $db->query('SELECT product.name as name, product.code as code,product.id,product.product_type_id as product_type_id,product.product_ids,product.product_category_id as category_id, product.quantity, product_category.name as category_name, product_type.name as product_type from product LEFT JOIN product_category ON product.product_category_id = product_category.id LEFT JOIN product_type ON product.product_type_id = product_type.id');
+        $data = $query->getResult();
+        
+        return $this->respond([
+            'status' => true,
+            'message' => "Product successfully fetched",
+            'data' => $data
+        ]);
+    }
+
     public function get_product_specification_by_id($id)
     {
         $db = db_connect();
-        $query = $db->query("SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product_specifications ON purchase_invoice_items.product_id = product_specifications.id WHERE purchase_invoice_items.product_id = ".$id." AND purchase_invoice_items.status = 'unallocated';");        
+        $query = $db->query("SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product ON purchase_invoice_items.product_id = product.id WHERE purchase_invoice_items.product_id = ".$id." AND purchase_invoice_items.status = 'unallocated';");        
         $data['invoice_items'] = $query->getResult();
 
         return $this->respond([
@@ -4520,16 +4533,16 @@ class Api extends ResourceController
 
         switch ($_GET['type']) {
             case 'BRANCH':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.branch_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.branch_id = $id");          
                 break;
             case 'BUILDING':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.building_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.building_id = $id");          
                 break;
             case 'FLOOR':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.floor_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.floor_id = $id");          
                 break;
             case 'ROOM':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE allocated_assets.room_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.room_id = $id");          
                 break;
         }        
 

@@ -190,6 +190,7 @@ class Inventory extends BaseController
             $data['quantity'] = $_POST['quantity'];
             $data['product_category_id'] = $_POST['productcategory'];
             $data['product_type_id'] = $_POST['producttype'];
+            $data['code'] = $_POST['code'];
             if(isset($_POST['productids'])){
             $data['product_ids'] = COUNT($_POST['productids']) == 0 ? "" : implode(',', $_POST['productids']);
             }
@@ -210,6 +211,7 @@ class Inventory extends BaseController
             $data['product_type_id'] = $_POST['producttype'];
             $data['product_category_id'] = $_POST['productcategory'];
             $data['quantity'] = $_POST['quantity'];
+            $data['code'] = $_POST['code'];
 
             $inventoryModel = new InventoryModel();
             $inventoryModel->update_product($productid, $data);
@@ -611,6 +613,9 @@ class Inventory extends BaseController
     public function details($id=null)
     {
         if ($_SESSION['userdetails'] != null) {
+
+            $data['id'] = '';
+            
             if($id ==null){
             $data['page_name'] = 'Inventory/details';
 
@@ -2085,7 +2090,7 @@ class Inventory extends BaseController
             $data['purchase_invoice'] = $query->getRow();
 
             $db = db_connect();
-            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product_specifications.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product_specifications ON purchase_invoice_items.product_id = product_specifications.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');        
+            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product ON purchase_invoice_items.product_id = product.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');        
             $data['purchase_invoice_items'] = $query->getResult();
 
             $db = db_connect();
@@ -2134,7 +2139,7 @@ class Inventory extends BaseController
                 $query = $db->query('SELECT COUNT(*) AS product_count FROM purchase_invoice_items WHERE product_id = '.$_POST['product_id'][$key].';');        
                 $product_count = $query->getRow()->product_count;
                 
-                $query = $db->query('SELECT * FROM product_specifications WHERE id = '.$_POST['product_id'][$key].';');        
+                $query = $db->query('SELECT * FROM product WHERE id = '.$_POST['product_id'][$key].';');        
                 $product_code = $query->getRow()->code;
 
                 $purchaseInvoiceItem = new PurchaseInvoiceItemModel();
@@ -2165,6 +2170,11 @@ class Inventory extends BaseController
 
             $productSpecificationModel = new ProductSpecificationModel();
             $data['product_specifications'] = $productSpecificationModel->get_product_specifications();
+
+            $db = db_connect();
+            // $query = $db->query('SELECT product_specifications.*, product_category.name AS category_name FROM product_specifications JOIN product_category ON product_specifications.category_id = product_category.id;');
+            $query = $db->query('SELECT product.*, product.product_category_id as category_id, product_category.name AS category_name, product_type.name as product_type FROM product JOIN product_category ON product.product_category_id = product_category.id JOIN product_type ON product.product_type_id = product_type.id;');
+            $data['product_specifications'] = $query->getResult();
 
             $inventoryModel = new InventoryModel();
             $data['categories'] = $inventoryModel->getproductcategorys();
@@ -2386,14 +2396,33 @@ class Inventory extends BaseController
             $db = db_connect();
             $query = $db->query("SELECT * FROM asset_audit_items 
                         JOIN allocated_assets ON asset_audit_items.allocated_asset_id = allocated_assets.id
-                        JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE status = 'scanned' AND asset_audit_id =".$id.";");        
+                        JOIN product ON allocated_assets.product_id = product.id WHERE status = 'scanned' AND asset_audit_id =".$id.";");        
             $data['scanned_items'] = $query->getResult();
 
             $db = db_connect();
             $query = $db->query("SELECT * FROM asset_audit_items 
                         JOIN allocated_assets ON asset_audit_items.allocated_asset_id = allocated_assets.id
-                        JOIN product_specifications ON allocated_assets.product_id = product_specifications.id WHERE status = 'pending' AND asset_audit_id =".$id.";");        
+                        JOIN product ON allocated_assets.product_id = product.id WHERE status = 'pending' AND asset_audit_id =".$id.";");        
             $data['pending_items'] = $query->getResult();
+            
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function warehouse_details()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/warehouseDetails';
+            
+            $db = db_connect();
+            $query = $db->query("SELECT purchase_invoice_items.*, product.name as product_name, warehouses.name as warehouse_name, SUM(purchase_invoice_items.quantity) AS item_quantity, purchase_invoices.warehouse_id, warehouses.name FROM purchase_invoice_items 
+            JOIN product ON purchase_invoice_items.product_id = product.id 
+            JOIN purchase_invoices ON purchase_invoice_items.purchase_invoice_id = purchase_invoices.id 
+            JOIN warehouses ON purchase_invoices.warehouse_id = warehouses.id WHERE purchase_invoice_items.status = 'unallocated' 
+            GROUP BY purchase_invoice_items.product_id, purchase_invoices.warehouse_id, warehouses.name;");
+            $data['products'] = $query->getResult();
             
             return view('loggedinuser/index.php', $data);
         } else {

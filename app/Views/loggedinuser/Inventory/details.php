@@ -25,7 +25,7 @@
                                     <th>Product Name</th>
                                     <th>Product Type</th>
                                     <th>Product Category</th>
-                                     <?php if($id !=""){    ?>
+                                    <?php if($id !=""){    ?>
                                     <th>Receipt</th>
                                     <?php } ?>
                                     <th>Total Quantity</th>
@@ -212,7 +212,7 @@
                                                 <?php
                                                 foreach ($products as $product) :
                                                 ?>
-                                                    <option value="<?php echo $product->productid; ?>"><?php echo $product->productname . "({$product->vendorname})" . " - {$product->productby}" . " -{$product->specification}"; ?></option>
+                                                    <option value="<?php echo $product->id; ?>"><?php echo $product->productname ?></option>
                                                 <?php
                                                 endforeach;
                                                 ?>
@@ -519,11 +519,11 @@
                                     <select class="form-control select2 mb" style="width: 100%;"  name='category'>
                                                 <option>Select Distribute Category
                                                 </option>
-                                                <option value='1'  <?php if($_GET['category']==1){echo "selected";}?>>Student
+                                                <option value='1'  <?php if(isset($_GET['category']) && $_GET['category']==1){echo "selected";}?>>Student
                                                 </option>
-                                                <option value='2' <?php if($_GET['category']==2){echo "selected";}?>>Employee
+                                                <option value='2' <?php if(isset($_GET['category']) && $_GET['category']==2){echo "selected";}?>>Employee
                                                 </option>
-                                            </select>
+                                     </select>
                     <br>
                     <br>
                                     

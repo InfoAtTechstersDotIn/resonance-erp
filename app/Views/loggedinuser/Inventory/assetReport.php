@@ -37,7 +37,7 @@
                             </div>
                                     
                             <div class="col-md-12">
-                                <select onchange="handleGetItem('ROOM', event)" id="room_id_from" name="room_id_from" style="width: 100%;" class="form-control mb">
+                                <select id="room_id_from" name="room_id_from" style="width: 100%;" class="form-control mb">
                                     <option value="">Select Room</option>
                                     <?php foreach ($rooms as $room) : ?>
                                         <option style="display: block;" data-room-floor-id="<?php echo $room->floor_id; ?>" value="<?php echo $room->id; ?>"><?php echo $room->name; ?></option>

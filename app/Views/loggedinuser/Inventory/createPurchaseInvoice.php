@@ -74,7 +74,7 @@
 
     let product_specifications = undefined;
 
-    fetch('<?php echo base_url('api/get_product_specifications') ?>')
+    fetch('<?php echo base_url('api/get_product') ?>')
     .then(response => {
         return response.json();
     })
@@ -114,6 +114,7 @@
         productInput.name = "product_id[]";
         productInput.required = true;
         productInput.onchange = (event) => {
+            
             if ($(event.target).find(':selected').data('product-type') == 'consumable') {
                 event.target.parentNode.querySelector('.manufacturer_input').setAttribute('type', 'hidden');
                 event.target.parentNode.querySelector('.quantity_input').setAttribute('type', 'number');
@@ -122,7 +123,7 @@
             if ($(event.target).find(':selected').data('product-type') == 'asset') {
                 event.target.parentNode.querySelector('.manufacturer_input').setAttribute('type', 'text');
                 event.target.parentNode.querySelector('.quantity_input').setAttribute('type', 'hidden');
-                event.target.parentNode.querySelector('.quantity_input').value = '';
+                event.target.parentNode.querySelector('.quantity_input').value = 1;
             }
             if ($(event.target).find(':selected').data('product-type') == 'set') {
                 event.target.parentNode.querySelector('.manufacturer_input').setAttribute('type', 'hidden');

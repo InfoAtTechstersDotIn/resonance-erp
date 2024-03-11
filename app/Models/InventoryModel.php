@@ -180,7 +180,7 @@ class InventoryModel extends Model
     public function getproducts()
     {
         $db = db_connect();
-        $query = $db->query('SELECT product.name as productname,product.id,product.product_type_id,product.product_ids,product.product_category_id, product.quantity, product_category.name as categoryname, product_type.name as producttype from product LEFT JOIN product_category ON product.product_category_id = product_category.id LEFT JOIN product_type ON product.product_type_id = product_type.id');
+        $query = $db->query('SELECT product.name as productname, product.code as code,product.id,product.product_type_id,product.product_ids,product.product_category_id, product.quantity, product_category.name as categoryname, product_type.name as producttype from product LEFT JOIN product_category ON product.product_category_id = product_category.id LEFT JOIN product_type ON product.product_type_id = product_type.id');
         return $query->getResult();
     }
 
@@ -260,6 +260,7 @@ class InventoryModel extends Model
 
     public function gettransfers($DateFrom=null)
     {
+        $where = '';
         if ($DateFrom != NULL) {
             if ($where == '') {
                 $where = " and inventorydetails.created_timestamp like '%{$DateFrom}%'";

@@ -12,6 +12,7 @@
                                 <tr>
                                     <th>Product Name</th>
                                     <th>Quantity</th>
+                                    <th>Product Code</th>
                                     <th>Product Type</th>
                                     <th>Product Category</th>
                                     <th>Edit</th>
@@ -26,9 +27,10 @@
                                     <tr>
                                         <td><?php echo $result->productname ?></td>
                                         <td><?php echo $result->quantity ?></td>
+                                        <td><?php echo $result->code ?></td>
                                         <td><?php echo $result->producttype ?></td>
                                         <td><?php echo $result->categoryname ?></td>
-                                        <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->productname ?>', '<?php echo  $result->quantity ?>', '<?php echo $result->product_category_id ?>', '<?php echo $result->product_type_id ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
+                                        <td><i onclick="edit('<?php echo $result->id ?>', '<?php echo  $result->productname ?>', '<?php echo  $result->quantity ?>', '<?php echo $result->product_category_id ?>', '<?php echo $result->product_type_id ?>', '<?php echo $result->code ?>')" data-toggle="modal" data-target="#edit" class="fa fa-pencil-square-o editbtn"></i></td>
                                         <td><i onclick="remove('<?php echo $result->id ?>')" class='fa fa-trash'></i></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -58,7 +60,10 @@
                                         <label class="text-uppercase text-sm">Product Quantity</label>
                                         <input type="text" placeholder="Product quantity" name="quantity" class="form-control mb">
                                     </div>
-
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Product Code</label>
+                                        <input type="text" placeholder="Product Code" name="code" class="form-control mb" required>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -136,6 +141,10 @@
                                         <label class="text-uppercase text-sm">Product Quantity</label>
                                         <input type="text" placeholder="Product Quantity" id="quantity" name="quantity" class="form-control mb">
                                     </div>
+                                    <div class="col-md-6">
+                                        <label class="text-uppercase text-sm">Product Code</label>
+                                        <input type="text" placeholder="Product Code" id="code" name="code" class="form-control mb" required>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
@@ -185,13 +194,14 @@
             $("#ids").css("display", "none");
         }
     }
-    function edit(productid, productname,quantity, productcategory, producttype) {
+    function edit(productid, productname,quantity, productcategory, producttype, code) {
         alert(productcategory);
         $('#productid').val(productid);
         $('#productname').val(productname);
         $('#quantity').val(quantity);
         $('#productcategory').val(productcategory);
         $('#producttype').val(producttype);
+        $('#code').val(code);
     }
 
     function remove(id) {
