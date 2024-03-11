@@ -19,11 +19,24 @@
                     
                     <div class="col-lg-6">
                         <label class="text-uppercase text-sm">Product Specification</label>
-                        <select onchange="handleGetInventoryItem(event)" id="product_specification_id" name="product_specification_id" style="width: 100%;" class="form-control mb">
+                        <select id="product_specification_id" name="product_specification_id" style="width: 100%;" class="form-control mb">
                             <option value="">Select Specification</option>
                             <?php foreach ($product_specifications as $product_specification): ?>
                                 <option data-category-id="<?php echo $product_specification->category_id; ?>" value="<?php echo $product_specification->id; ?>">
                                     <?php echo $product_specification->name; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    
+                    <div class="col-lg-6">
+                        <label class="text-uppercase text-sm">Warehouse</label>
+                        <select onchange="handleGetVarehouseItem(event)" style="width: 100%;" class="form-control mb">
+                            <option value="">Select Warehouse</option>
+                            <?php foreach ($warehouses as $warehouse): ?>
+                                <option value="<?php echo $warehouse->id; ?>">
+                                    <?php echo $warehouse->name; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -201,140 +214,51 @@
         });
     }
 
-    const handleCreateProductInput = (manufacturer_id, product_id, price, quantity, gst, total) => {
+    
+    function handleGetVarehouseItem(event) {
 
-        let parentDiv = document.createElement('div');
-        parentDiv.style.display = "flex";
+        let product_id = document.getElementById('product_specification_id').value;
 
-        let manufacturerInput = document.createElement('select');
-        manufacturerInput.className = "form-control select2 mb mr-2";
-        manufacturerInput.name = "manufacturer_id[]";
-        manufacturerInput.required = true;
+        document.getElementById('items-list-table').innerHTML = '';
 
-        let manufacturerOption = document.createElement('option');
-        manufacturerOption.value = "";
-        manufacturerOption.innerHTML = "Select Manufacturers";
-        manufacturerInput.appendChild(manufacturerOption);
-        manufacturers.forEach((element,index) => {
-            let option = document.createElement('option');
-            option.value = element.id;
-            option.innerHTML = element.name;
-            if (parseInt(manufacturer_id) == parseInt(element.id)) {
-                option.selected = true;
-            }
-            manufacturerInput.appendChild(option);
+        fetch('<?php echo base_url('api/get_warehouse_item') ?>/' + event.target.value + '/' + product_id)
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {    
+
+            console.log(data.data.invoice_items);
+            
+            data.data.invoice_items.forEach((element,index) => {
+
+                let parentDiv = document.createElement('tr');
+                
+                let product_specification_name = document.createElement('td');
+                product_specification_name.innerHTML =element.product_specification_name;
+
+                let manufacturer_name = document.createElement('td');
+                manufacturer_name.innerHTML =element.manufacturer_name;
+
+                let product_serial_no = document.createElement('td');
+                product_serial_no.innerHTML =element.product_serial_no;
+
+                let action = document.createElement('td');
+
+                let checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+                checkbox.name = "product_id[]";
+                checkbox.value = element.id;
+                action.append(checkbox);
+                
+
+                parentDiv.append(product_specification_name, manufacturer_name, product_serial_no, action);
+                
+                document.getElementById('items-list-table').appendChild(parentDiv);
+            });
+
+        })
+        .catch(error => {
+            console.error(error);
         });
-
-        let productInput = document.createElement('select');
-        productInput.className = "form-control mb";
-        productInput.name = "product_id[]";
-        productInput.required = true;
-
-        let productOption = document.createElement('option');
-        productOption.value = "";
-        productOption.innerHTML = "Select Product";
-        productInput.appendChild(productOption);
-
-        product_specifications.forEach((element,index) => {
-            let option = document.createElement('option');
-            option.value = element.id;
-            option.innerHTML = element.name;
-            if (parseInt(product_id) == parseInt(element.id)) {
-                option.selected = true;
-            }
-            productInput.appendChild(option);
-        });
-        
-        let priceInput = document.createElement('input');
-        priceInput.type = "number";
-        priceInput.className = "form-control mb price_input";
-        priceInput.name = "price[]";
-        priceInput.value = price;
-        priceInput.required = true;
-        priceInput.min = 1;
-        priceInput.max = 10000000;
-        priceInput.placeholder = "Price";
-        priceInput.onkeyup = (event) => {
-            let gst_percentage = event.target.parentNode.querySelector('.gst_input').value
-            let gross_amount = event.target.value * event.target.parentNode.querySelector('.quantity_input').value;
-            let tax = (gross_amount * gst_percentage) / 100;
-            event.target.parentNode.querySelector('.total_input').value = (gross_amount + tax).toFixed(2);
-            calculateTotal();
-        };
-
-        let manufacturerSerialNoInput = document.createElement('input');
-        manufacturerSerialNoInput.type = "text";
-        manufacturerSerialNoInput.className = "form-control mb manufacturer_input";
-        manufacturerSerialNoInput.name = "manufacturer_serial_no[]";
-        manufacturerSerialNoInput.required = true;
-        manufacturerSerialNoInput.minLength = 1;
-        manufacturerSerialNoInput.maxLength = 250;
-        manufacturerSerialNoInput.placeholder = "Manufacturer Serial No";
-
-        let quantityInput = document.createElement('input');
-        quantityInput.type = "hidden";
-        quantityInput.className = "form-control mb quantity_input";
-        quantityInput.name = "quantity[]";
-        quantityInput.value = 1;
-        quantityInput.required = true;
-        quantityInput.min = 1;
-        quantityInput.max = 10000;
-        quantityInput.placeholder = "Enter Quantity";
-        quantityInput.onkeyup = (event) => {
-            let gst_percentage = event.target.parentNode.querySelector('.gst_input').value
-            let gross_amount = event.target.parentNode.querySelector('.price_input').value * event.target.value;
-            let tax = (gross_amount * gst_percentage) / 100;
-            event.target.parentNode.querySelector('.total_input').value = (gross_amount + tax).toFixed(2);
-            calculateTotal();
-        };
-        
-        let gstInput = document.createElement('input');
-        gstInput.type = "number";
-        gstInput.className = "form-control mb gst_input";
-        gstInput.name = "gst[]";
-        gstInput.value = gst;
-        gstInput.required = true;
-        gstInput.min = 1;
-        gstInput.max = 10000;
-        gstInput.placeholder = "Enter GST Percentage";
-        gstInput.onkeyup = (event) => {
-            let gst_percentage = event.target.value;
-            let gross_amount = event.target.parentNode.querySelector('.price_input').value * event.target.parentNode.querySelector('.quantity_input').value;
-            let tax = (gross_amount * gst_percentage) / 100;
-            event.target.parentNode.querySelector('.total_input').value = (gross_amount + tax).toFixed(2);
-            calculateTotal();
-        };
-
-        let totalInput = document.createElement('input');
-        totalInput.type = "number";
-        totalInput.className = "form-control mb total_input";
-        totalInput.name = "total[]";
-        totalInput.value = total;
-        totalInput.required = true;
-        totalInput.min = 1;
-        totalInput.max = 10000000;
-        totalInput.readOnly = true;
-        totalInput.placeholder = "Enter Total";
-
-        let remove = document.createElement('button');
-        remove.className = "btn btn-danger mb";
-        remove.innerHTML = 'Remove';
-        remove.type = "button";
-        remove.onclick = (event) => {
-            event.target.parentNode.remove();
-        }
-
-        parentDiv.append(manufacturerInput, productInput, priceInput, manufacturerSerialNoInput, quantityInput, gstInput, totalInput, remove);
-        document.getElementById('purchase-invoice-items-input').appendChild(parentDiv);
-    }
-
-    const calculateTotal = () => {
-        let total = 0;
-        document.querySelectorAll('.total_input').forEach((element) => {
-            if (element.value != "") {
-                total += parseInt(element.value)
-            }
-        });
-        document.getElementById('total_amount').innerHTML = total.toFixed(2);
     }
 </script>

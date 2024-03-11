@@ -195,7 +195,6 @@
         }
     }
     function edit(productid, productname,quantity, productcategory, producttype, code) {
-        alert(productcategory);
         $('#productid').val(productid);
         $('#productname').val(productname);
         $('#quantity').val(quantity);

@@ -2188,6 +2188,8 @@ class Inventory extends BaseController
             $floorModel = new FloorModel();
             $data['floors'] = $floorModel->get_all_floors();
 
+            $floorModel = new WarehouseModel();
+            $data['warehouses'] = $floorModel->get_warehouses();
 
             $roomModel = new RoomModel();
             $data['rooms'] = $roomModel->get_rooms();

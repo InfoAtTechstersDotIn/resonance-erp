@@ -91,7 +91,7 @@
         parentDiv.style.display = "flex";
 
         let manufacturerInput = document.createElement('select');
-        manufacturerInput.className = "form-control select2 mb mr-2";
+        manufacturerInput.className = "form-control mb mr-2 select2";
         manufacturerInput.name = "manufacturer_id[]";
         manufacturerInput.required = true;
 
@@ -110,7 +110,7 @@
         });
 
         let productInput = document.createElement('select');
-        productInput.className = "form-control mb";
+        productInput.className = "form-control mb select2";
         productInput.name = "product_id[]";
         productInput.required = true;
         productInput.onchange = (event) => {
@@ -131,7 +131,7 @@
                 event.target.parentNode.querySelector('.quantity_input').value = 1;
             }
         }
-
+            
         let productOption = document.createElement('option');
         productOption.value = "";
         productOption.innerHTML = "Select Product";
@@ -157,6 +157,7 @@
         priceInput.min = 1;
         priceInput.max = 10000000;
         priceInput.placeholder = "Price";
+        priceInput.style.width = "200px";
         priceInput.onkeyup = (event) => {
             let gst_percentage = event.target.parentNode.querySelector('.gst_input').value
             let gross_amount = event.target.value * event.target.parentNode.querySelector('.quantity_input').value;
@@ -173,6 +174,7 @@
         manufacturerSerialNoInput.minLength = 1;
         manufacturerSerialNoInput.maxLength = 250;
         manufacturerSerialNoInput.placeholder = "Manufacturer Serial No";
+        manufacturerSerialNoInput.style.width = "200px";
 
         let quantityInput = document.createElement('input');
         quantityInput.type = "hidden";
@@ -183,6 +185,7 @@
         quantityInput.min = 1;
         quantityInput.max = 10000;
         quantityInput.placeholder = "Enter Quantity";
+        quantityInput.style.width = "200px";
         quantityInput.onkeyup = (event) => {
             let gst_percentage = event.target.parentNode.querySelector('.gst_input').value
             let gross_amount = event.target.parentNode.querySelector('.price_input').value * event.target.value;
@@ -200,6 +203,7 @@
         gstInput.min = 1;
         gstInput.max = 10000;
         gstInput.placeholder = "Enter GST Percentage";
+        gstInput.style.width = "200px";
         gstInput.onkeyup = (event) => {
             let gst_percentage = event.target.value;
             let gross_amount = event.target.parentNode.querySelector('.price_input').value * event.target.parentNode.querySelector('.quantity_input').value;
@@ -218,6 +222,7 @@
         totalInput.max = 10000000;
         totalInput.readOnly = true;
         totalInput.placeholder = "Enter Total";
+        totalInput.style.width = "130px";
 
         let remove = document.createElement('button');
         remove.className = "btn btn-danger mb";
@@ -228,7 +233,20 @@
         }
 
         parentDiv.append(manufacturerInput, productInput, priceInput, manufacturerSerialNoInput, quantityInput, gstInput, totalInput, remove);
+
         document.getElementById('purchase-invoice-items-input').appendChild(parentDiv);
+
+        $('.select2').select2({
+            width: 550
+        });
+
+        $('.select2-container .select2-selection--single').css({"height": "47px"});
+        $('.select2-container--default .select2-selection--single .select2-selection__rendered').css({"line-height": "45px"});
+        $('.select2-container .select2-selection--single .select2-selection__rendered').css({"padding-left": "18px"});
+        $('.select2-container--default .select2-selection--single .select2-selection__arrow').css({"height": "44px"});
+
+        
+
     }
 
     const calculateTotal = () => {
@@ -240,4 +258,8 @@
         });
         document.getElementById('total_amount').innerHTML = total.toFixed(2);
     }
+
+    $('body').on('DOMNodeInserted', 'select', function () {
+        $(this).select2();
+    });
 </script>

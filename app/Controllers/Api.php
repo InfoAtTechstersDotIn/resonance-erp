@@ -4566,4 +4566,21 @@ class Api extends ResourceController
             'data' => null
         ]);
     }
+
+    public function get_warehouse_item($id, $product_id) 
+    {
+        $db = db_connect();
+        $query = $db->query("SELECT purchase_invoice_items.*, product.name as product_specification_name, manufacturers.name as manufacturer_name, warehouses.name as warehouse_name, purchase_invoices.warehouse_id, warehouses.name FROM purchase_invoice_items 
+            JOIN product ON purchase_invoice_items.product_id = product.id 
+            JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id 
+            JOIN purchase_invoices ON purchase_invoice_items.purchase_invoice_id = purchase_invoices.id 
+            JOIN warehouses ON purchase_invoices.warehouse_id = warehouses.id WHERE purchase_invoice_items.status = 'unallocated' AND purchase_invoices.warehouse_id = ".$id." AND product.id = ".$product_id."");
+            $data['invoice_items'] = $query->getResult();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Item successfully updated",
+            'data' => $data
+        ]);
+    }
 }
