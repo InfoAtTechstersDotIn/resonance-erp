@@ -41,7 +41,9 @@ use App\Models\ReservationModel;
 
                     <div class="tab-content tab-validate">
                         <?php
+                          if ($rezofastdetails) {
                         $rezofastdetails = json_decode($StudentDetail->rezofastdetails);
+                          }
                         ?>
                         <div id="reservation" class="tab-pane fade in active">
                             <br />
@@ -475,6 +477,10 @@ use App\Models\ReservationModel;
 
                         <div id="fees" class="tab-pane fade">
                             <br />
+                            <?php if($rezofastdetails){
+                                
+                                ?>
+                          
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -541,7 +547,7 @@ use App\Models\ReservationModel;
                                     </div>
                                 </div>
                             </div>
-
+                            <?php } ?>
                             <br />
 
                             <?php $helperModel = new HelperModel(); ?>
@@ -721,7 +727,6 @@ use App\Models\ReservationModel;
                                                         <?php if ($_SESSION['rights'][array_search('Payment', array_column($_SESSION['rights'], 'operationname'))]->_edit == 1) :
                                                             if ($result->paymentstatusname != "Approved") :
                                                         ?>
-                                                                <i data-toggle="modal" data-target="#editpayment" class="fa fa-pencil-square-o" onclick="editPayment('<?php echo $result->paymentid ?>','<?php echo $result->name ?>','<?php echo $result->paymenttypeid ?>','<?php echo $result->paymentamount ?>','<?php echo date_format(date_create($result->paymentdate), 'd/m/Y') ?>','<?php echo $result->otherdetails ?>','<?php echo $result->remarks ?>')"></i>
                                                         <?php
                                                             endif;
                                                         endif; ?>
@@ -729,7 +734,7 @@ use App\Models\ReservationModel;
                                                     <td>
                                                         <?php if ($_SESSION['rights'][array_search('Payment', array_column($_SESSION['rights'], 'operationname'))]->_delete == 1) : ?>
                                                             <?php
-                                                            $html = "<a href='" . base_url('payments/deletepayment') . "?paymentid=" . $result->paymentid . "' class='btn-del'><i class='fa fa-trash'></i></a>";
+                                                            $html = "<a href='" . base_url('payments/deletepayment') . "?paymentid=" . $result->reservation_paymentid . "' class='btn-del'><i class='fa fa-trash'></i></a>";
                                                             echo $html; ?>
                                                         <?php endif; ?>
                                                     </td> -->
@@ -899,7 +904,7 @@ use App\Models\ReservationModel;
                                     <?php
                                     
                                       $reservationModel = new ReservationModel();
-                                   $PaymentDetail = $reservationModel->getReservationPaymentDetailsByReservationId($result->reservationid);
+                                   $PaymentDetail = $reservationModel->getReservationPaymentDetailsByReservationId($StudentDetail->reservationid);
                                    $totalPayment=0;
                                    foreach ($PaymentDetail as $payment) :
                                        $totalPayment = $totalPayment+$payment->paymentamount;
@@ -910,15 +915,15 @@ use App\Models\ReservationModel;
                                    endforeach;
                                     
                                       $helperModel = new HelperModel();
-                                  $ipe =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Intermediate Fee');
+                                  $ipe =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Intermediate Fee');
                                  
-                                   $tution =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Tuition Fee');
-                                    $hostel =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Hostel Fee');
-                                     $laundry =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Laundry');
-                                     $uniform =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Uniform');
-                                      $books =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Books');
-                                       $caution =  $helperModel->get_fees_from_lookup($result->courseid, $result->admissiontypeid, $result->batchid, 'Caution Deposit');
-                                   $finalfee = ($tution + $hostel + $ipe + $laundry + $books + $caution + $uniform)- $result->discountgiven;
+                                   $tution =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Tuition Fee');
+                                    $hostel =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Hostel Fee');
+                                     $laundry =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Laundry');
+                                     $uniform =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Uniform');
+                                      $books =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Books');
+                                       $caution =  $helperModel->get_fees_from_lookup($StudentDetail->courseid, $StudentDetail->admissiontypeid, $StudentDetail->batchid, 'Caution Deposit');
+                                   $finalfee = ($tution + $hostel + $ipe + $laundry + $books + $caution + $uniform)- $StudentDetail->discountgiven;
                                  // echo $result->tuition_discount;
                                    
                                   $halffee = (40 / 100) * $finalfee;
@@ -926,7 +931,7 @@ use App\Models\ReservationModel;
                                   // echo $totalPayment;
                                 // echo  $result->reservationstatusname;
                                   //$halffee = $finalfee/2;
-                                    if($StudentDetail->reservationstatusid==4 && $StudentDetail->is_migrate==0 &&  $_SESSION['activebatch']==4)
+                                    if($StudentDetail->reservationstatusid==4 && $StudentDetail->is_migrate==0)
                                     {
                                         echo "<a href='" . base_url('users/migratestudent?id=') . $StudentDetail->reservationid . "' class='btn btn-primary'>Migrate</a>";
                                        // echo 1111;
@@ -946,7 +951,7 @@ use App\Models\ReservationModel;
                     <input type="hidden" id="scholarship" name='scholarship'  />
                     <input type="hidden" id="discountgiven" name='discountgiven' value="<?php echo $StudentDetail->discountgiven ?>"  />
                     <input type="hidden" id="id" name='id' value="<?php echo $StudentDetail->reservationid ?>"  />
-                    <input type="hidden" id="hdnrezofastdetails" name='rezofastdetails' value="<?php echo urlencode($StudentDetail->rezofastdetails) ?>" />
+                    <input type="hidden" id="hdnrezofastdetails" name='rezofastdetails' value="" />
                 </form>
                 
                  <div class="modal fade" id="editpayment" tabindex="-1" role="dialog">

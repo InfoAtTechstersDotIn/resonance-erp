@@ -49,7 +49,9 @@ use App\Models\ReservationModel;
 
                     <div class="tab-content tab-validate">
                         <?php
+                        if($rezofastdetails){
                         $rezofastdetails = json_decode($StudentDetail->rezofastdetails);
+                        }
                          
                                      if($_SESSION['agentdetails']->roleid == 1)
                                    {
@@ -68,6 +70,14 @@ use App\Models\ReservationModel;
                                             $new2 = '';
                                         }
                                         $kit = $helperModel->getStudentKit($StudentDetail->courseid);
+                                        $kit = $helperModel->getStudentKit($StudentDetail->courseid);
+                                        if($StudentDetail->admissiontypeid == 3)
+                                        {
+                                         $studentkit = $kit[0]->studentkit_dayscholar;
+                                        }else
+                                        {
+                                            $studentkit = $kit[0]->studentkit_resdential;
+                                        }
                                        ?>
                                         <div id="reservation" class="tab-pane fade in active">
                             <br />
@@ -1250,7 +1260,10 @@ I know that the fee paid towards reservation is non-refundable in any case. Canc
                                 
                                 <div class="col-md-6">
                                     <label class="text-uppercase f-16">Payment Link : <i style="color: red;"></i></label>
-                                     <h1><?php print_r($PaymentLinks[0]->url);?></h1>
+                                     <h1><?php
+                                     if($PaymentLinks){
+                                     print_r($PaymentLinks[0]->url);
+                                     }?></h1>
                                     <br />
                                     </div>
                             </div>
@@ -1626,7 +1639,7 @@ I know that the fee paid towards reservation is non-refundable in any case. Canc
                                                       <?php }else
                                                       {
                                                           ?>
-                                                    <input type="number" min="0"  value="0"  name="tuition_discount1" id="text_tuition_fees_total" class='form-control mb' required/>
+                                                            <input type="hidden" min="0"  value="0"  name="tuition_discount1" id="text_tuition_fees_total" class='form-control mb' required/>
                                                             <?php
                                                       }?>
                                         <?php
@@ -2554,7 +2567,7 @@ I know that the fee paid towards reservation is non-refundable in any case. Canc
                  
              }else
              {
-                 $('#text_tuition_fees_total').attr("min", $('#text_tuition_fees_total').val() - MaxDiscountPermitted);
+                // $('#text_tuition_fees_total').attr("min", $('#text_tuition_fees_total').val() - MaxDiscountPermitted);
               $('#discountgiven').attr("max", MaxDiscountPermitted);
              }
              

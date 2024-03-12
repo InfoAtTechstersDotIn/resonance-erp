@@ -4461,7 +4461,6 @@ class Api extends ResourceController
       
         return $response;
     }
-
     public function get_manufacturers()
     {
         $manufacturerModel = new ManufacturerModel();

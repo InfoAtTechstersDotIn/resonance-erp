@@ -1093,7 +1093,7 @@ class ApiModel extends Model
     public function Approvedapplicationlist($branchid,$batchid)
 	{
 		$db = db_connect();
-		$query = $db->query("select reservationid,reservation_ukey,admissiontypeid,courseid,batchid,branchid,name from reservation where branchid in({$branchid}) and batchid={$batchid} and is_migrate=0");
+		$query = $db->query("select reservationid,reservation_ukey,admissiontypeid,courseid,batchid,branchid,name from reservation where branchid in({$branchid}) and batchid={$batchid} and is_migrate=0 and reservation_date > now() - interval 24 hour");
     //	$query = $db->query("select application_ukey,email from applications where reservationstatusid=5 and batchid=4 and is_enrolled=0");
 		$results = $query->getResult();
 		$db->close();

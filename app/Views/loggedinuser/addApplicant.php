@@ -221,7 +221,7 @@
                                         <?php
                                         foreach ($lookups['boardlookup'] as $board) :
                                         ?>
-                                            <option <?php echo $classInfo->board == $board->boardid ? "selected" : "" ?> value="<?php echo $board->boardid; ?>"><?php echo $board->boardname; ?></option>
+                                            <option value="<?php echo $board->boardid; ?>"><?php echo $board->boardname; ?></option>
                                         <?php
                                         endforeach;
                                         ?>
@@ -232,7 +232,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">Door No./ Street Name<i style="color: red;">*</i></label>
-                                    <input type="text" placeholder="Door No./ Street Name" id="door_street" name="door_street" class="form-control mb" value="<?php echo $permanentAddress->door_street ?>" required>
+                                    <input type="text" placeholder="Door No./ Street Name" id="door_street" name="door_street" class="form-control mb" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">State<i style="color: red;">*</i></label>
@@ -251,34 +251,26 @@
                                     <label class="text-uppercase text-sm">District<i style="color: red;">*</i></label>
                                     <select onchange="this.classList.remove('error')" id="district" name="district" style="width: 100%;" class="select2 form-control mb" required>
                                         <option value="">Select District</option>
-                                        <?php
-                                        foreach ($lookups['districtslookup'] as $district) :
-                                            if ($district->state_id == $permanentAddress->state) :
-                                        ?>
-                                                <option value="<?php echo $district->district_id; ?>"><?php echo $district->district_name; ?></option>
-                                        <?php
-                                            endif;
-                                        endforeach;
-                                        ?>
+                                        
                                     </select>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">City/ Town<i style="color: red;">*</i></label>
-                                    <input type="text" placeholder="City/ Town" id="city_town" name="city_town" class="form-control mb" value="<?php echo $permanentAddress->city_town ?>" required>
+                                    <input type="text" placeholder="City/ Town" id="city_town" name="city_town" class="form-control mb"  required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">Village/ Mandal<i style="color: red;">*</i></label>
-                                    <input type="text" placeholder="Village/ Mandal" id="village_mandal" name="village_mandal" class="form-control mb" value="<?php echo $permanentAddress->village_mandal ?>" required>
+                                    <input type="text" placeholder="Village/ Mandal" id="village_mandal" name="village_mandal" class="form-control mb"  required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">Pin<i style="color: red;">*</i></label>
-                                    <input type="text" placeholder="Pin" id="pin" name="pin" class="form-control mb" value="<?php echo $permanentAddress->pin ?>" required>
+                                    <input type="text" placeholder="Pin" id="pin" name="pin" class="form-control mb" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">Landmark<i style="color: red;">*</i></label>
-                                    <input type="text" placeholder="Landmark" id="landmark" name="landmark" class="form-control mb" value="<?php echo $permanentAddress->landmark ?>" required>
+                                    <input type="text" placeholder="Landmark" id="landmark" name="landmark" class="form-control mb"  required>
                                 </div>
                             </div>
 

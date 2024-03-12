@@ -35,7 +35,6 @@ class AssetAuditModel extends Model
     {
         $db = db_connect();
         $query = $db->query("UPDATE asset_audit_items SET status = 'scanned' WHERE allocated_asset_id = $id AND DATE(created_at) = CURDATE();");        
-        return $query->getResult();
     }
 
     public function delete_asset_audit($id)

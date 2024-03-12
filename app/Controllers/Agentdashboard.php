@@ -18,6 +18,8 @@ class Agentdashboard extends BaseController
     public $session;
     var $key = "rzp_live_HitgmaI2G7gM95";
     var $secret = "Yfv8CwD9oUX3G4p5skO2bzCJ";
+    // var $key = "rzp_test_FxlPFjUHb77fGz";
+    // var $secret = "QrosgQ24x4aoDD8EZP4fYQqd";
     var $key1 = "rzp_live_xYTgZTX1tbC9Lw";
     var $secret1 = "X1byNR9Hbti2xN2MR2mA2Aub";
     public function __construct()
@@ -28,7 +30,7 @@ class Agentdashboard extends BaseController
     public function index()
     {
    
-        if ($_SESSION['agentdetails'] == null) {
+        if (!isset($_SESSION['agentdetails'])) {
 			return redirect()->to(base_url('home/login'));
 		} else {
             $data['page_name'] = 'agentdashboard';
@@ -53,6 +55,7 @@ class Agentdashboard extends BaseController
         $usersModel = new UsersModel();
         $data['EmployeeDetails'] = $usersModel->getMarketingEmployeeDetails();
         $resofastId = $this->request->getGetPost('resofast');
+        $data['rezofastdetails'] ='';
          if ($resofastId != "") {
 
                 $isValidResofastId = $usersModel->checkDuplicateResofastId($resofastId);
@@ -184,7 +187,7 @@ class Agentdashboard extends BaseController
             if ($data['StudentDetail']->rezofastdetails != NULL || $data['StudentDetail']->rezofastdetails != "") {
                 $data['StudentDetail']->rezofastdetails = urldecode($data['StudentDetail']->rezofastdetails);
             }
-
+            $data['rezofastdetails'] = '';
             if ($resofastId != "") {
 
                 $isValidResofastId = $usersModel->checkDuplicateResofastId($resofastId);
@@ -339,48 +342,49 @@ class Agentdashboard extends BaseController
 
             $address_json = json_encode($address);
             $previous_class_information_json = json_encode($previous_class_information);
-
+            $eligibility = 1;
             $reservationModel = new ReservationModel();
             $insertId = $reservationModel->addApplicationUser(
                 $reservation_ukey,
-                $applicationtype,
-                $name,
-                $dateofbirth,
-                $genderid,
-                $nationalityid,
-                $religionid,
-                $categoryid,
-                $studentaadhaar,
-                $fathername,
-                $mothername,
-                $parentoccupation,
-                $visitorname,
-                $relationwithstudent,
-                $visitornumber,
-                $previous_class_information_json,
-                $address_json,
-                $mobile1,
-                $mobile2,
-                $email,
-                $admissiontypeid,
-                $branchid,
-                $courseid,
-                $course,
-                $sectionid,
-                $secondlanguageid,
-                $comments,
-                $referredby,
-                $batchid,
-                $admissiondate,
-                $reservationstatusid,
-                $scholarship,
-                $tuition_discount,
-                $hostel_discount,
-                $final_misc,
-                $discountrequested,
-                $discountgiven,
-                $created_by,
-                $profile_image
+$applicationtype,
+$name,
+$dateofbirth,
+$genderid,
+$nationalityid,
+$religionid,
+$categoryid,
+$studentaadhaar,
+$fathername,
+$mothername,
+$parentoccupation,
+$visitorname,
+$relationwithstudent,
+$visitornumber,
+$previous_class_information_json,
+$address_json,
+$mobile1,
+$mobile2,
+$email,
+$admissiontypeid,
+$branchid,
+$courseid,
+$course,
+$sectionid,
+$secondlanguageid,
+$comments,
+$referredby,
+$batchid,
+$admissiondate,
+$reservationstatusid,
+$eligibility,
+$scholarship,
+$tuition_discount,
+$hostel_discount,
+$final_misc,
+$discountrequested,
+$discountgiven,
+$created_by,
+$profile_image
             );
              $helperModel = new HelperModel();
                 $nextpaymentid = $helperModel->set_regapplicationidcounter();
@@ -669,7 +673,7 @@ class Agentdashboard extends BaseController
                 
                 
             }
-            $amount = 1 * 1250000 ;
+            $amount = 1 * 100 ;
             $description = "Payment Link";
             $userid = $reservationid;
              $invoiceid = '';

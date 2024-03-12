@@ -41,7 +41,9 @@
 
                     <div class="tab-content tab-validate">
                         <?php
+                        if ($rezofastdetails) {
                         $rezofastdetails = json_decode($StudentDetail->rezofastdetails);
+                        }
                         ?>
                         <div id="reservation" class="tab-pane fade in active">
                             <br />
@@ -54,7 +56,7 @@
                                 <div class="col-md-6">
                                     <?php
                                     $helperModel = new HelperModel();
-                                    $nextreservationnumber = $helperModel->get_reservationnumbercounter();
+                                    $nextreservationnumber = $helperModel->get_student_application_number($StudentDetail->branchid,$StudentDetail->batchid);
                                     
                                     ?>
                                    
@@ -449,6 +451,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <?php if($rezofastdetails){ ?>
                                         <td>
                                             <b>Resofast Hallticket Number </b><br />
                                             <?php echo $rezofastdetails->hallticketnumber ?>
@@ -467,11 +470,13 @@
                                         </td>
                                         <td>
                                         </td>
+                                        <?php } ?>
                                     </tr>
                                 </tbody>
                             </table>
                             <div style="display: block;">
                                 <br>
+                                 <?php if($rezofastdetails){ ?>
                                 <div class="row">
                                     <div class="col-md-4">
                                         Merit Scholarship
@@ -504,44 +509,90 @@
                                         <b>(<span style="color: red;"><?php echo $StudentDetail->discountgiven ?></span>)</b>
                                     </div>
                                 </div>
+                                 <?php } ?>
                             </div>
 
                             <br />
 
-                            <?php $helperModel = new HelperModel(); ?>
+                          
+                           <?php $helperModel = new HelperModel(); ?>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <label class="text-uppercase text-sm">Final Tuition Fees</label>
+                                    <label class="text-uppercase text-sm"><?php echo $StudentDetail->coursename;?></label>
                                     <?php if ($_SESSION['userdetails']->userid == 1) : ?>
-                                        <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="tuition_discount" id="text_tuition_fees_total" class='form-control mb' />
+                                        <input  type="number" min="0" value="<?php echo $StudentDetail->tuition_discount ?>" onkeyup="changeNormal()" readonly onchange="changeNormal1()" name="tuition_discount" id="text_tuition_fees_total1" class='form-control mb' />
+                                        <input type="hidden" value="<?php echo $StudentDetail->tuition_discount ?>" id="1styear">
+                                        <input type="hidden" value="<?php echo $StudentDetail->coursename;?>" id="1styearnamefee">
                                     <?php else: ?>
-                                        <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="tuition_discount" id="text_tuition_fees_total" class='form-control mb' />
+                                        <input type="number" min="0" value="<?php echo $StudentDetail->tuition_discount ?>" onkeyup="changeNormal()" readonly onchange="changeNormal1()" name="tuition_discount" id="text_tuition_fees_total1" class='form-control mb' />
+                                    <input type="hidden" value="<?php echo $StudentDetail->tuition_discount ?>" id="1styear">
+                                     <input type="hidden" value="<?php echo $StudentDetail->coursename;?>" id="1styearnamefee">
                                     <?php endif; ?>
                                 </div>
                                 <div class="col-md-4">
+                                    
                                     <?php
-                                    $people = array(3,6,8,9,10,13,14,15);
-                                    if(in_array($StudentDetail->courseid,$people)){
-                                        ?>
-                                        <label class="text-uppercase text-sm">Miscellaneous Fee</label>
-                                        <?php
-                                    }else
-                                    {
-                                        ?>
-                                        <label class="text-uppercase text-sm">IPE Fees</label>
-                                        <?php
-                                    }
+                                      $helperModel = new HelperModel();
+                                        $fee = $helperModel->getFeeStructure($StudentDetail->courseid,$StudentDetail->admissiontypeid,$StudentDetail->batchid);
+                                        $new = $fee[0]->fee;
+                                        $var = (int)$new ;
+                                        if($StudentDetail->nextid != 0){
+                                        $fee1 = $helperModel->getNextFeeStructure($StudentDetail->nextid,$StudentDetail->admissiontypeid,$StudentDetail->batchid);
+                                        $new1 = $fee1[0]->fee;
+                                        $new2 = $fee1[0]->coursename;
+                                        $var1 = (int)$new1 ;
+                                        }else
+                                        {
+                                            $var1 = 0;
+                                            $new2 = '';
+                                        }
+                                        $kit = $helperModel->getStudentKit($StudentDetail->courseid);
+                                        if($StudentDetail->admissiontypeid == 3)
+                                        {
+                                         $studentkit = $kit[0]->studentkit_dayscholar;
+                                        }else
+                                        {
+                                            $studentkit = $kit[0]->studentkit_resdential;
+                                        }
+                                             if($var1 !=0){ ?>
+                                    <label class="text-uppercase f-16"><?php echo $new2;?></label>
+                                  <input type="number" disabled min="0" value="<?php echo $StudentDetail->tuition_discount1 ?>"  name="tuition_discount1" id="text_hostel_fees_total2" class='form-control mb'/>
+                                     <input type="hidden" value="<?php echo $StudentDetail->tuition_discount1 ?>" name="tuition_discount1" id="2ndyear">
+                                     <input type="hidden" value="<?php echo $new2;?>" name="tuition_discount1" id="2ndyearnamefee">
+                                     <?php } 
+                                     else
+                                     {
+                                         ?>
+                                         <input type="hidden" value="0" name="tuition_discount1" id="2ndyear">
+                                     <input type="hidden" value="0" name="tuition_discount1" id="2ndyearnamefee">
+                                         <?php
+                                     }
+                                    /* $people = array(3,6,8,9,10,13,14,15,16,17);
+                                    // if(in_array($StudentDetail->courseid,$people)){
+                                    //     ?>
+                                    //     <label class="text-uppercase text-sm">Miscellaneous Fee</label>
+                                    //     <?php
+                                    // }else
+                                    // {
+                                    //     ?>
+                                    //     <label class="text-uppercase text-sm">IPE Fees</label>
+                                    //     <?php
+                                    // } 
+                                    
+                                    // if ($_SESSION['userdetails']->roleid == 1) : ?>
+                                    //     <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="ipe_discount" id="text_ipe_fees_total" class='form-control mb' />
+                                    // <?php else: ?>
+                                    //     <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="ipe_discount" id="text_ipe_fees_total" class='form-control mb'  <?php 
+                                    //     ?>/>
+                                    // <?php endif; ?> 
+                                    */
                                     ?>
-                                    <?php if ($_SESSION['userdetails']->userid == 1) : ?>
-                                        <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="ipe_discount" id="text_ipe_fees_total" class='form-control mb' />
-                                    <?php else: ?>
-                                        <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="ipe_discount" id="text_ipe_fees_total" class='form-control mb' />
-                                    <?php endif; ?>
                                 </div>
-                                <div class="col-md-4">
+                              <!--  <div class="col-md-4">
                                     <label class="text-uppercase text-sm">Hostel Fees</label>
-                                    <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="hostel_discount" id="text_hostel_fees_total" class='form-control mb' />
-                                </div>
+                                    <input type="number" min="0" value="0" onkeyup="changeNormal()" readonly onchange="changeNormal()" name="hostel_discount" id="text_hostel_fees_total" class='form-control mb' <?php 
+                                        ?>/>
+                                </div> -->
                                 <div class="col-md-4">
                                     <label class="text-uppercase text-sm">Comments</label>
                                     <input type='text' name='comments' placeholder="comments" class='form-control mb' value="<?php echo $StudentDetail->comments ?>">
@@ -611,7 +662,6 @@
                                                         <?php if ($_SESSION['rights'][array_search('Payment', array_column($_SESSION['rights'], 'operationname'))]->_edit == 1) :
                                                             if ($result->paymentstatusname != "Approved") :
                                                         ?>
-                                                                <i data-toggle="modal" data-target="#editpayment" class="fa fa-pencil-square-o" onclick="editPayment('<?php echo $result->paymentid ?>','<?php echo $result->name ?>','<?php echo $result->paymenttypeid ?>','<?php echo $result->paymentamount ?>','<?php echo date_format(date_create($result->paymentdate), 'd/m/Y') ?>','<?php echo $result->otherdetails ?>','<?php echo $result->remarks ?>')"></i>
                                                         <?php
                                                             endif;
                                                         endif; ?>
@@ -619,7 +669,7 @@
                                                     <td>
                                                         <?php if ($_SESSION['rights'][array_search('Payment', array_column($_SESSION['rights'], 'operationname'))]->_delete == 1) : ?>
                                                             <?php
-                                                            $html = "<a href='" . base_url('payments/deletepayment') . "?paymentid=" . $result->paymentid . "' class='btn-del'><i class='fa fa-trash'></i></a>";
+                                                            $html = "<a href='" . base_url('payments/deletepayment') . "?paymentid=" . $result->reservation_paymentid . "' class='btn-del'><i class='fa fa-trash'></i></a>";
                                                             echo $html; ?>
                                                         <?php endif; ?>
                                                     </td> -->
@@ -753,7 +803,7 @@
                     <input type="hidden" id="scholarship" name='scholarship' required />
                     <input type="hidden" id="discountgiven" name='discountgiven' value="<?php echo $StudentDetail->discountgiven ?>" required />
                     <input type="hidden" id="id" name='id' value="<?php echo $StudentDetail->reservationid ?>" required />
-                    <input type="hidden" id="hdnrezofastdetails" name='rezofastdetails' value="<?php echo urlencode($StudentDetail->rezofastdetails) ?>" />
+                    <input type="hidden" id="hdnrezofastdetails" name='rezofastdetails' value="" />
                 </form>
 
                 <div class="modal fade" id="Resofast" tabindex="-1" role="dialog">

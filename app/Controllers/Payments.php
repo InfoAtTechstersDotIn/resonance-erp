@@ -414,14 +414,14 @@ class Payments extends BaseController
 				$remarks
 			);
 
-			if ($result->resultID) {
+		//	if ($result->resultID) {
 				$nextpaymentid = $helperModel->set_paymentidcounter();
 
 				$html = file_get_contents(base_url("payments/print_reservationreceipt?reservationpaymentid={$reservation_paymentid}&batchid={$_SESSION['activebatch']}"));
 
 				$paymentsModel = new PaymentsModel();
 				$paymentsModel->htmltopdf($html, 'save', $reservation_paymentid, 'RP');
-			}
+		//	}
              $studentDetails = $reservationModel->getReservationDetails($reservationid);
             $comm = new Comm();
 			$data[0] = $studentDetails->mobile1;

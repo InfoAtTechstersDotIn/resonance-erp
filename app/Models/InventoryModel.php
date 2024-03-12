@@ -260,7 +260,7 @@ class InventoryModel extends Model
 
     public function gettransfers($DateFrom=null)
     {
-        $where = '';
+        $where ='';
         if ($DateFrom != NULL) {
             if ($where == '') {
                 $where = " and inventorydetails.created_timestamp like '%{$DateFrom}%'";
@@ -405,7 +405,7 @@ class InventoryModel extends Model
                                 FROM `employee_inventory` RIGHT JOIN employeedetails on employee_inventory.userid = employeedetails.userid 
                                 WHERE employeedetails.userid = $userid)B
                             ON A.productid = B.productid");
-        $results = $query->getResult();
+        $results = '';
         $db->close();
 
         return $results;

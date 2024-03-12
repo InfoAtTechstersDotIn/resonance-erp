@@ -399,8 +399,16 @@ class PaymentsModel extends Model
     public function addApplicationPayment($paymentid, $userid, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $bathcid = 0, $remarks = NULL)
     {
         $db = db_connect();
-
-        $data['updated_by'] = ($_SESSION['agentdetails'] != NULL ? $_SESSION['agentdetails']->userid : NULL) == NULL ? 1 : $_SESSION['agentdetails']->userid;
+        
+        if(isset($_SESSION['agentdetails']))
+        {
+            $updated_by = $_SESSION['agentdetails']->userid;
+        }else
+        {
+            $updated_by = 1;
+        }
+        
+        $data['updated_by'] = $updated_by;
 
         $data['paymentid'] = $paymentid;
         $data['userid'] = $userid;
@@ -663,7 +671,6 @@ class PaymentsModel extends Model
         $batchid = $batchid == NULL ? $_SESSION['activebatch'] : $batchid;
         $usersmodel = new UsersModel();
         $studentDetails = $usersmodel->getStudentDetails($userid, $batchid);
-
         $helpermodel = new HelperModel();
         $feestructurelookup = $helpermodel->get_feestructurelookup();
         $newInvoiceId = $helpermodel->get_nextInvoiceId($userid);

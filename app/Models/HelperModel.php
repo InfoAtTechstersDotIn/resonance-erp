@@ -19,10 +19,19 @@ class HelperModel extends Model
     public function get_rights()
     {
         $db = db_connect();
+        if(isset($_SESSION['userdetails']))
+        {
         $query = $db->query("SELECT * from rights r 
             JOIN roleslookup rl ON rl.roleid = r.roleid
             JOIN operationslookup o ON r.operationid = o.operationid 
             WHERE r.roleid = {$_SESSION['userdetails']->roleid}");
+        }elseif(isset($_SESSION['agentdetails']))
+        {
+            $query = $db->query("SELECT * from rights r 
+            JOIN roleslookup rl ON rl.roleid = r.roleid
+            JOIN operationslookup o ON r.operationid = o.operationid 
+            WHERE r.roleid = {$_SESSION['agentdetails']->roleid}");
+        }
         $results = $query->getResult();
         $db->close();
 
@@ -153,6 +162,31 @@ class HelperModel extends Model
         $db = db_connect();
 
         $builder = $db->table('counters');
+        $builder->update($data);
+    }
+    
+    public function get_student_application_number($branchid,$batchid)
+    {
+        $db = db_connect();
+        $query = $db->query("SELECT applicationnumber FROM student_application_numbers where branchid={$branchid} and batchid={$batchid}");
+        $result = $query->getRow();
+        $db->close();
+
+        return $result->applicationnumber;
+    }
+
+    public function set_student_application_number($branchid,$batchid)
+    {
+        $current = $this->get_student_application_number($branchid,$batchid);
+        $nextpaymentid = $current + 1;
+
+        $data['applicationnumber'] = $nextpaymentid;
+
+        $db = db_connect();
+
+        $builder = $db->table('student_application_numbers');
+        $builder->where('branchid', $branchid);
+        $builder->where('batchid', $batchid);
         $builder->update($data);
     }
 
@@ -551,13 +585,21 @@ class HelperModel extends Model
      public function get_branchlookup()
     {
         $db = db_connect();
-        if($_SESSION['userdetails'] != null)
+        if(isset($_SESSION['userdetails']))
         {
-        if ($_SESSION['userdetails']->userid == 1 || $_SESSION['new_student_form'] == 1 || $_SESSION['api'] == 1) {
-            $query = $db->query("SELECT * from branchlookup");
-        } else {
-            $query = $db->query("SELECT * from branchlookup where branchid in ({$_SESSION['userdetails']->branchid})");
-        }
+            if(!isset($_SESSION['new_student_form']))
+            {
+                $_SESSION['new_student_form'] = null;
+            }
+            if(!isset($_SESSION['api']))
+            {
+                $_SESSION['api'] = null;
+            }
+            if ($_SESSION['userdetails']->userid == 1 || $_SESSION['new_student_form'] == 1 || $_SESSION['api'] == 1) {
+                $query = $db->query("SELECT * from branchlookup");
+            } else {
+                $query = $db->query("SELECT * from branchlookup where branchid in ({$_SESSION['userdetails']->branchid})");
+            }
         }elseif($_SESSION['agentdetails'] != null)
         {
             $query = $db->query("SELECT * from branchlookup");

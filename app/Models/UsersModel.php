@@ -254,6 +254,7 @@ class UsersModel extends Model
     }
      public function getAllEmployeeDetailsfilter($branchid,$roleid,$active)
     {
+        $where ='';
         $db = db_connect();
          if ($branchid != NULL) {
             if ($where == '') {
@@ -351,6 +352,7 @@ class UsersModel extends Model
 
     public function get_student_attendance($date,$branchid, $courseid,$sectionid)
     {
+        $where ='';
         $db = db_connect();
         if ($branchid != NULL) {
             if ($where == '') {
@@ -979,7 +981,7 @@ class UsersModel extends Model
     
     public function getApplicationDetails($reservationId)
     {
-        $WhereClausebatchid = $batchid == NULL ? "" : " and applications.batchid IN ({$batchid})";
+        //$WhereClausebatchid = $batchid == NULL ? "" : " and applications.batchid IN ({$batchid})";
         $db = db_connect();
         $query = $db->query("SELECT * from applications 
                                  LEFT JOIN branchlookup ON applications.branchid = branchlookup.branchid
@@ -990,7 +992,7 @@ class UsersModel extends Model
                                  LEFT JOIN nationalitylookup ON applications.nationalityid = nationalitylookup.nationalityid
                                  LEFT JOIN religionlookup ON applications.religionid = religionlookup.religionid
                                  LEFT JOIN categorylookup ON applications.categoryid = categorylookup.categoryid
-                                 WHERE applications.applicationid = '$reservationId' $WhereClausebatchid");
+                                 WHERE applications.applicationid = '$reservationId'");
         $results = $query->getRow();
         $db->close();
 
@@ -1223,25 +1225,11 @@ class UsersModel extends Model
         $data['applicationnumber'] = $applicationnumber;
         $data['reservation_ukey'] = $reservation_ukey;
         $data['studentaadhaar'] = $studentaadhaar;
-
         $data['applicationstatusid'] = 1;
         $data['created_by'] = $_SESSION['userdetails']->userid;
-
         $builder = $db->table('studentdetails');
         $status = $builder->insert($data);
-
-        if(count($status->connID->error_list) > 0)
-        {
-            var_dump($status);
-            echo "<br /><br /><br /><br /><br />";
-            echo "<h1>If you see this screen please take a screenshot of this and send it to Techsters.</h1>";
-            
-            $db->close();
-            exit();
-        }
-
         $db->close();
-
         if ($status) {
             $db1 = db_connect();
             $data1['studentid'] = $userid;
@@ -1250,10 +1238,8 @@ class UsersModel extends Model
             $data1['batchid'] = $batchid;
             $data1['courseid'] = $courseid;
             $data1['sectionid'] = $sectionid;
-
             $builder1 = $db1->table('student_class_relation');
             $status1 = $builder1->insert($data1);
-
             $db->close();
         }
     }
@@ -2109,6 +2095,24 @@ class UsersModel extends Model
     {
         $db = db_connect();
         $query = $db->query("SELECT * from users join employeedetails on users.userid = employeedetails.userid where uniqueid='$uniqueid'");
+        $results = $query->getResult();
+        $db->close();
+
+        return $results;
+    }
+    public function Employeework($userid)
+    {
+        $db = db_connect();
+        $query = $db->query("SELECT * from employee_work where employeeid='$userid'");
+        $results = $query->getResult();
+        $db->close();
+
+        return $results;
+    }
+    public function Employeeeducation($userid)
+    {
+        $db = db_connect();
+        $query = $db->query("SELECT * from employee_education where employeeid='$userid'");
         $results = $query->getResult();
         $db->close();
 

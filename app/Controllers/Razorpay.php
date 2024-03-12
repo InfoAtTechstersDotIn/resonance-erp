@@ -182,8 +182,9 @@ class Razorpay extends BaseController
     public function invoicePaidWebhook()
     {
         $invoiceData = json_decode(file_get_contents('php://input'), true);
-        if ($invoiceData != null && $invoiceData['event'] == "invoice.paid") {
-            $invoiceId = $invoiceData['payload']['invoice']['entity']['id'];
+       // if ($invoiceData != null && $invoiceData['event'] == "invoice.paid") {
+          //  $invoiceId = $invoiceData['payload']['invoice']['entity']['id'];
+          $invoiceId  ="inv_NkxFXcWBnAisu4";
             $paymentsModel = new PaymentsModel();
             $paymentLink = $paymentsModel->getPaymentLinkByInvoiceId($invoiceId);
             if ($paymentLink) {
@@ -214,9 +215,9 @@ class Razorpay extends BaseController
                     $paymentsModel = new PaymentsModel();
                     $result = $paymentsModel->addStudentPayment($paymentid, $userid, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $batchid, $invoice, "Payment Link");
 
-                    if ($result->resultID) {
+                   // if ($result->resultID) {
                         $nextpaymentid = $helperModel->set_paymentidcounter();
-                    }
+                  //  }
 
                     $razorpayModel = new RazorpayModel();
                     $razorpayModel->update_payment_status($invoiceId, $invoiceData['payload']['invoice']['entity']['status']);
@@ -293,6 +294,7 @@ class Razorpay extends BaseController
                     curl_close($curl);
                 }
             } else {
+                
                 $paymentLink = $paymentsModel->getApplicationPaymentLinkByInvoiceId($invoiceId);
                 $userid = $paymentLink->userid;
                 $batchid = $paymentLink->batchid;
@@ -304,6 +306,8 @@ class Razorpay extends BaseController
                 $paymentamount = $paymentLink->amount;
                 $paymentdate = date("Y-m-d", $invoiceData['payload']['invoice']['entity']['paid_at']);
                 $otherdetails = $invoiceData['payload']['invoice']['entity']['payment_id'];
+                // $paymentdate = date("Y-m-d");
+                // $otherdetails = "test123xyz";
                 $db = db_connect();
                 $query = $db->query("SELECT * FROM applicationpayments WHERE otherdetails = '$otherdetails'");
                 $result = $query->getResult();
@@ -324,14 +328,15 @@ class Razorpay extends BaseController
                 $paymentsModel = new PaymentsModel();
                 $result = $paymentsModel->addApplicationPayment($paymentid, $userid, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $batchid, "Booking Amount");
 
-                if ($result->resultID) {
+               // if ($result->resultID) {
                     $nextpaymentid = $helperModel->set_paymentidcounter();
-                }
+               // }
 
-                $html = file_get_contents(base_url("payments/print_applicationreceipt?paymentid={$paymentid}&batchid=3"));
+                $html = file_get_contents(base_url("payments/print_applicationreceipt?paymentid={$paymentid}&batchid=$batchid"));
                 $paymentsModel->htmltopdf($html, 'save', $paymentid, 'R');
                 $razorpayModel = new RazorpayModel();
-                $razorpayModel->update_applicationpayment_status($invoiceId, $invoiceData['payload']['invoice']['entity']['status'], $userid);
+                  $razorpayModel->update_applicationpayment_status($invoiceId, $invoiceData['payload']['invoice']['entity']['status'], $userid);
+               // $razorpayModel->update_applicationpayment_status($invoiceId, 'paid', $userid);
                 $razorpayModel->update_application_status($userid);
                 $reservationModel = new ReservationModel();
                 $studentDetails = $reservationModel->getApplicationDetails($userid, $batchid);
@@ -339,7 +344,7 @@ class Razorpay extends BaseController
                 $comm = new Comm();
                 $data[0] = $studentDetails->mobile1;
                 $data[1] = $paymentamount;
-                $data[2] = $studentDetails->applicationnumber;
+                $data[2] = $studentDetails->application_ukey;
                 // $data[3] = base_url("receipt_files/{$paymentid}.pdf");
                 $data[3] = "https://rb.gy/geapsq?id=" . $studentDetails->applicationid;
                 $data[4] = $studentDetails->name;
@@ -533,9 +538,9 @@ class Razorpay extends BaseController
                         'Booking Amount'
                     );
 
-                    if ($result->resultID) {
+                  //  if ($result->resultID) {
                         $nextpaymentid = $helperModel->set_paymentidcounter();
-                    }
+                   // }
 
                     $reservationModel->updateApplication1(
                         $reservationid
@@ -545,7 +550,8 @@ class Razorpay extends BaseController
                     $retstatus = $studentDetails->retstatus;
                     if($retstatus == 1)
                     {
-                        $paymentdate = date("d/m/Y", $invoiceData['payload']['invoice']['entity']['paid_at']);
+                         $paymentdate = date("d/m/Y", $invoiceData['payload']['invoice']['entity']['paid_at']);
+                        //$paymentdate = date("d/m/Y");
                         $data = array('email' => $email, 'application_no' => "$applicatio", 'secret_key' => '7f553c6768790902c5f73d49db02746f', 'form_id' => '18781', 'enrolled_field9' => '12500', 'enrolled_field10' => $paymentdate, 'enrolled_field11' => $otherdetails, 'mode' => 'update');
 
                     // Data should be passed as json format
@@ -604,7 +610,7 @@ class Razorpay extends BaseController
                 }
                 }
             }
-        }
+        //}
     }
     
     public function invoicePaidWebhooktest()

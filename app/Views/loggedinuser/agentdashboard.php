@@ -126,6 +126,7 @@
                                         <div class="panel-body bk-primary text-light">
                                             <div class="stat-panel text-center">
                                                 <?php
+                                                $migrate =0;
                             if($_SESSION['agentdetails']->roleid == 1)
                                                   {
                                                       $db = db_connect();

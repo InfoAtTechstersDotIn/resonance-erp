@@ -162,7 +162,7 @@
                                    //echo $finalfee;
                                   $halffee = (40 / 100) * $finalfee;
                                   $halffee = $finalfee/2;
-                                    if($result->reservationstatusname=="Approved" && $totalPayment >= 12500 &&  $result->is_migrate==0 &&  $_SESSION['activebatch']==3)
+                                    if($result->reservationstatusname=="Approved" && $totalPayment >= 12500 &&  $result->is_migrate==0)
                                     {
                                         echo "<a href='" . base_url('users/migratestudent?id=') . $result->reservationid . "' class='btn btn-success'>Migrate</a>";
                                     }

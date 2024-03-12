@@ -1,9 +1,9 @@
 <?php
 
-
 namespace App\Controllers;
 
 use App\Models\AllocatedAssetsModel;
+use App\Models\AreaModel;
 use App\Models\AssetAllocationHistory;
 use App\Models\AssetAuditModel;
 use App\Models\BuildingModel;
@@ -183,7 +183,7 @@ class Inventory extends BaseController
         }
     }
 
-    public function addproduct()
+     public function addproduct()
     {
         if ($_SESSION['userdetails'] != null) {
             $data['name'] = $_POST['productname'];
@@ -1923,8 +1923,6 @@ class Inventory extends BaseController
             return redirect()->to(base_url('dashboard'));
         }
     }
-    
-    
     public function manufacturers()
     {
         if ($_SESSION['userdetails'] != null) {
@@ -1991,7 +1989,6 @@ class Inventory extends BaseController
 
             $inventoryModel = new InventoryModel();
             $data['categories'] = $inventoryModel->getproductcategorys();
-            $data['producttype'] = $inventoryModel->getproducttype();
 
             return view('loggedinuser/index.php', $data);
         } else {
@@ -2006,8 +2003,7 @@ class Inventory extends BaseController
             $data['name'] = $_POST['name'];
             $data['code'] = $_POST['code'];
             $data['category_id'] = $_POST['category_id'];
-            $data['product_type_id'] = $_POST['product_type_id'];
- 
+
             $productSpecificationModel = new ProductSpecificationModel();
             $productSpecificationModel->add_product_specification($data);
 
@@ -2024,7 +2020,6 @@ class Inventory extends BaseController
             $data['name'] = $_POST['name'];
             $data['code'] = $_POST['code'];
             $data['category_id'] = $_POST['category_id'];
-            $data['product_type_id'] = $_POST['product_type_id'];
 
             $productSpecificationModel = new ProductSpecificationModel();
             $productSpecificationModel->update_product_specification($product_specification_id, $data);
@@ -2090,7 +2085,7 @@ class Inventory extends BaseController
             $data['purchase_invoice'] = $query->getRow();
 
             $db = db_connect();
-            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product ON purchase_invoice_items.product_id = product.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');        
+            $query = $db->query('SELECT purchase_invoice_items.*, manufacturers.name AS manufacturer_name, product.name AS product_name FROM purchase_invoice_items JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id JOIN product ON purchase_invoice_items.product_id = product.id WHERE purchase_invoice_items.purchase_invoice_id = '.$id.';');
             $data['purchase_invoice_items'] = $query->getResult();
 
             $db = db_connect();
@@ -2135,25 +2130,28 @@ class Inventory extends BaseController
 
             foreach ($_POST['manufacturer_id'] as $key => $value) {
 
-                $db = db_connect();
-                $query = $db->query('SELECT COUNT(*) AS product_count FROM purchase_invoice_items WHERE product_id = '.$_POST['product_id'][$key].';');        
-                $product_count = $query->getRow()->product_count;
-                
-                $query = $db->query('SELECT * FROM product WHERE id = '.$_POST['product_id'][$key].';');        
-                $product_code = $query->getRow()->code;
+                for ($i = 1; $i <= $_POST['quantity'][$key]; $i++) { 
 
-                $purchaseInvoiceItem = new PurchaseInvoiceItemModel();
-                $purchase_invoice_item_id = $purchaseInvoiceItem->add_purchase_invoice_item([
-                    'purchase_invoice_id' => $purchaseInvoiceId,
-                    'manufacturer_id' => $_POST['manufacturer_id'][$key],
-                    'product_id' => $_POST['product_id'][$key],
-                    'quantity' => $_POST['quantity'][$key],
-                    'price' => $_POST['price'][$key],
-                    'gst' => $_POST['gst'][$key],
-                    'total' => $_POST['total'][$key],
-                    'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
-                    'product_serial_no' => $product_code . "-" . $product_count
-                ]);
+                    $db = db_connect();
+                    $query = $db->query('SELECT COUNT(*) AS product_count FROM purchase_invoice_items WHERE product_id = '.$_POST['product_id'][$key].';');        
+                    $product_count = $query->getRow()->product_count;
+                    
+                    $query = $db->query('SELECT * FROM product WHERE id = '.$_POST['product_id'][$key].';');        
+                    $product_code = $query->getRow()->code;
+
+                    $purchaseInvoiceItem = new PurchaseInvoiceItemModel();
+                    $purchase_invoice_item_id = $purchaseInvoiceItem->add_purchase_invoice_item([
+                        'purchase_invoice_id' => $purchaseInvoiceId,
+                        'manufacturer_id' => $_POST['manufacturer_id'][$key],
+                        'product_id' => $_POST['product_id'][$key],
+                        'quantity' => 1,
+                        'price' => $_POST['price'][$key],
+                        'gst' => $_POST['gst'][$key],
+                        'total' => $_POST['total'][$key],
+                        'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
+                        'product_serial_no' => $product_code . "-" . $product_count
+                    ]);
+                }
             }
 
             return redirect()->to(base_url('Inventory/purchase_invoices'));
@@ -2194,15 +2192,17 @@ class Inventory extends BaseController
             $roomModel = new RoomModel();
             $data['rooms'] = $roomModel->get_rooms();
 
+            $areaModel = new AreaModel();
+            $data['areas'] = $areaModel->get_areas();
 
-                return view('loggedinuser/index.php', $data);
-            } 
+            return view('loggedinuser/index.php', $data);
+        } 
             else {
             return redirect()->to(base_url('dashboard'));
         }
     }
 
-    public function add_asset_allocation()
+     public function add_asset_allocation()
     {
         if ($_SESSION['userdetails'] != null) {
             
@@ -2221,6 +2221,7 @@ class Inventory extends BaseController
                 $data['building_id'] = $_POST['building_id'];
                 $data['floor_id'] = $_POST['floor_id'];
                 $data['room_id'] = $_POST['room_id'];
+                $data['area_id'] = $_POST['area_id'];
                 $path = 'qrcode/'.rand(9999999,100000000).'.png';
                 $data['qr_image_path'] = "public/$path";
 
@@ -2262,6 +2263,9 @@ class Inventory extends BaseController
             $roomModel = new RoomModel();
             $data['rooms'] = $roomModel->get_rooms();
 
+            $areaModel = new AreaModel();
+            $data['areas'] = $areaModel->get_areas();
+
                 return view('loggedinuser/index.php', $data);
             } 
             else {
@@ -2284,18 +2288,19 @@ class Inventory extends BaseController
 
                     $model = new AllocatedAssetsModel();
                     $model->update_allocated_assets($value, $data);
-
-                    $history_data = [
+                      $history_data = [
                         'purchase_invoice_item_id' => $_POST['purchase_invoice_item_id'][$key],
                         'product_id' =>  $_POST['product_id'][$key],
                         'from_branch_id' => $_POST['branch_id_from'],
                         'from_building_id' => $_POST['building_id_from'],
                         'from_floor_id' => $_POST['floor_id_from'],
                         'from_room_id' => $_POST['room_id_from'],
+                        'from_area_id' => $_POST['area_id_from'],
                         'to_branch_id' => $_POST['branch_id_to'],
                         'to_building_id' => $_POST['building_id_to'],
                         'to_floor_id' => $_POST['floor_id_to'],
                         'to_room_id' => $_POST['room_id_to'],
+                        'to_area_id' => $_POST['area_id_to'],
                         'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
                         'product_serial_no' => $_POST['product_serial_no'][$key],
                         'manufacturer_id' => null
@@ -2303,7 +2308,6 @@ class Inventory extends BaseController
 
                     $model = new AssetAllocationHistory();
                     $model->add_asset_allocation_history($history_data);
-
                 }
 
                 return redirect()->to(base_url('Inventory/asset_transfer'));
@@ -2344,6 +2348,7 @@ class Inventory extends BaseController
 
             $helperModel = new HelperModel();
             $data['lookups'] = $helperModel->get_lookups();
+
 
             $assetAuditModel = new AssetAuditModel();
             $data['asset_audits'] = $assetAuditModel->get_asset_audits();
@@ -2405,7 +2410,7 @@ class Inventory extends BaseController
             $db = db_connect();
             $query = $db->query("SELECT * FROM asset_audit_items 
                         JOIN allocated_assets ON asset_audit_items.allocated_asset_id = allocated_assets.id
-                        JOIN product ON allocated_assets.product_id = product.id WHERE status = 'pending' AND asset_audit_id =".$id.";");        
+                        JOIN product ON allocated_assets.product_id = product.id WHERE status = 'pending' AND asset_audit_id =".$id.";");         
             $data['pending_items'] = $query->getResult();
             
             return view('loggedinuser/index.php', $data);
@@ -2413,7 +2418,6 @@ class Inventory extends BaseController
             return redirect()->to(base_url('dashboard'));
         }
     }
-
     public function warehouse_details()
     {
         if ($_SESSION['userdetails'] != null) {
@@ -2432,10 +2436,10 @@ class Inventory extends BaseController
             return redirect()->to(base_url('dashboard'));
         }
     }
-
+    
     public function warehouse_allocation_history()
     {
-        if ($_SESSION['userdetails'] != null) {
+        if (isset($_SESSION['userdetails'])) {
             $data['page_name'] = 'Inventory/warehouseAllocationHistory';
             
             $db = db_connect();
@@ -2454,6 +2458,41 @@ class Inventory extends BaseController
                 JOIN floors ON allocated_assets.floor_id = floors.id
                 JOIN rooms ON allocated_assets.room_id = rooms.id
             ");
+            $data['products'] = $query->getResult();
+            
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function asset_transfer_history()
+    {
+        if (isset($_SESSION['userdetails'])) {
+            $data['page_name'] = 'Inventory/assetTransferHistory';
+            
+            $db = db_connect();
+            $query = $db->query("SELECT 
+            asset_allocation_history.*, 
+            product.name as product_name, 
+            from_branch_lookup.branchname as from_branch,
+            from_buildings.name as from_building,
+            from_floors.name as from_floor,
+            from_rooms.name as from_room,
+            to_branch_lookup.branchname as to_branch,
+            to_buildings.name as to_building,
+            to_floors.name as to_floor,
+            to_rooms.name as to_room
+            FROM asset_allocation_history 
+            JOIN product ON asset_allocation_history.product_id = product.id
+            JOIN branchlookup AS from_branch_lookup ON asset_allocation_history.from_branch_id = from_branch_lookup.branchid
+            JOIN buildings AS from_buildings ON asset_allocation_history.from_building_id = from_buildings.id
+            JOIN floors AS from_floors ON asset_allocation_history.from_floor_id = from_floors.id
+            JOIN rooms AS from_rooms ON asset_allocation_history.from_room_id = from_rooms.id
+            JOIN branchlookup AS to_branch_lookup ON asset_allocation_history.to_branch_id = to_branch_lookup.branchid
+            JOIN buildings AS to_buildings ON asset_allocation_history.to_building_id = to_buildings.id
+            JOIN floors AS to_floors ON asset_allocation_history.to_floor_id = to_floors.id
+            JOIN rooms AS to_rooms ON asset_allocation_history.to_room_id = to_rooms.id;");
             $data['products'] = $query->getResult();
             
             return view('loggedinuser/index.php', $data);

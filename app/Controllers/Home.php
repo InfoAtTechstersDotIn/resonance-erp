@@ -383,10 +383,10 @@ class Home extends BaseController
 
 	public function set_academic_year($newBatchId)
 	{
-		if ($_SESSION['userdetails'] != null) {
+		if (isset($_SESSION['userdetails'])) {
 			$_SESSION['activebatch'] = $newBatchId;
 			return redirect()->to(base_url('dashboard'));
-		}elseif($_SESSION['agentdetails'] != null)
+		}elseif(isset($_SESSION['agentdetails']))
 		{
 		    $_SESSION['activebatch'] = $newBatchId;
 			return redirect()->to(base_url('agentdashboard'));

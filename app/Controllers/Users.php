@@ -196,7 +196,7 @@ class Users extends BaseController
             if ($data['StudentDetail']->rezofastdetails != NULL || $data['StudentDetail']->rezofastdetails != "") {
                 $data['StudentDetail']->rezofastdetails = urldecode($data['StudentDetail']->rezofastdetails);
             }
-
+$data['rezofastdetails'] ='';
             if ($resofastId != "") {
 
                 $isValidResofastId = $usersModel->checkDuplicateResofastId($resofastId);
@@ -318,7 +318,7 @@ class Users extends BaseController
     
     public function migratestudent()
     {
-        if ($_SESSION['userdetails'] != null) {
+        if (isset($_SESSION['userdetails'])) {
             $reservationId = $this->request->getGetPost('id');
             $data['reservationId'] = $reservationId;
             $data['page_name'] = 'Users/migratestudent';
@@ -334,6 +334,7 @@ class Users extends BaseController
 
             $paymentsModel = new PaymentsModel();
             $data['PaymentDetail'] = $reservationModel->getReservationPaymentDetailsByReservationId($reservationId);
+            $data['rezofastdetails'] ='';
 
             return view('loggedinuser/index.php', $data);
         } else {
@@ -413,6 +414,7 @@ class Users extends BaseController
     public function studentdetails()
     {
         if ($_SESSION['userdetails'] != null) {
+            $data['quickStudent'] ='';
             $userid = $this->request->getGetPost('id');
             $data['userid'] = $userid;
             $data['page_name'] = 'Users/studentdetails';
@@ -458,6 +460,7 @@ class Users extends BaseController
 
                 $formsModel = new FormsModel();
                 $data['forms'] = $formsModel->getPendingForms($userid);
+                
             } else {
                 $data['quickStudent'] = 1;
             }
@@ -1312,9 +1315,10 @@ class Users extends BaseController
             $batchid = $StudentDetail->batchid;
 
             $admissiondate = $StudentDetail->admissiondate;
-            $reservationstatusid = 1;
+            $reservationstatusid = 4;
             $scholarship = 0;
             $tuition_discount = $StudentDetail->tuition_discount;
+            $tuition_discount1 = $StudentDetail->tuition_discount1;
             $hostel_discount = 0;
             $final_misc = 0;
             $created_by = $_SESSION['agentdetails']->userid;
@@ -1370,7 +1374,7 @@ class Users extends BaseController
                 $created_by
             );
             if ($insertId != 0) {
-       
+                if($PaymentDetail){
                 $paymenttypeid = $PaymentDetail[0]->paymenttypeid;
                 $paymentamount =$PaymentDetail[0]->paymentamount;
                  $paymentdate = $PaymentDetail[0]->paymentdate;
@@ -1401,7 +1405,7 @@ class Users extends BaseController
                 if ($result->resultID) {
                     $nextpaymentid = $helperModel->set_paymentidcounter();
                 }
-                
+                }
                   $reservationModel->updateApplication1(
                 $reservationid);
             }
@@ -1430,16 +1434,9 @@ class Users extends BaseController
             
             //$applicationnumber = $_POST['applicationnumber'];
             $reservation_ukey = $StudentDetail->reservation_ukey;
-            $split = explode("-",$StudentDetail->reservation_ukey);
-            if($split[1] !='')
-            {
-            $applicationnumber = $split[1];
-            }else
-            {
-                $applicationnumber = $_POST['applicationnumber'];
-            }
+            $applicationnumber = $_POST['applicationnumber'];
             $studentaadhaar = $StudentDetail->studentaadhaar;
-
+            $room='';
             $admissiontypeid =$StudentDetail->admissiontypeid;
             $branchid = $StudentDetail->branchid;
             $batchid =  $StudentDetail->batchid;
@@ -1556,7 +1553,7 @@ class Users extends BaseController
             $paymentsModel = new PaymentsModel();
             $result = $paymentsModel->addPaymentNew($paymentid, $userid, 2, $paymentamount, $paymentdate, $paymenttypeid, $otherdetails, $paymentcollectedby, $paymentstatusid, $batchid, "Booking Amount",$createddate);
         endforeach; 
-        $nextpaymentid = $helperModel->set_reservationnumbercounter();
+        $nextpaymentid = $helperModel->set_student_application_number($branchid,$batchid);
         $reservationModel = new ReservationModel();
             $reservationModel->updateReservation1(
                 $reservationid);
@@ -2482,7 +2479,34 @@ class Users extends BaseController
         }
         move_uploaded_file($student_photo_doc, "uploads/{$userid}/photo.jpeg");
         $usersModel->updateOnBoardEmployee($userid, $name, $email, $dob,$gender, $pancard,$bloodgroup, $aadhar, $h_no, $village, $mandal, $district, $state, $pincode, $father, $mother, $spouse);
-       
+        $titleArr = $_POST['title'];
+        $companyArr  = $_POST['company'];
+        $fromArr = $_POST['from'];
+         $toArr = $_POST['to'];
+        for ($i = 0; $i < count($titleArr); $i++) {
+            $main['title'] =  $titleArr[$i];
+            $main['employeeid'] = $_POST['userid'];
+            $main['company'] =  $companyArr[$i];
+            $main['fromdate'] = $fromArr[$i];
+            $main['todate'] = $toArr[$i];
+             $db = db_connect();
+            $builder = $db->table('employee_work');
+            $builder->insert($main);
+        }
+        $levelArr = $_POST['level'];
+        $fieldArr  = $_POST['field'];
+        $fromeduArr = $_POST['fromeducation'];
+        $toeduArr = $_POST['toeducation'];
+        for ($i = 0; $i < count($levelArr); $i++) {
+            $main1['level'] =  $levelArr[$i];
+            $main1['employeeid'] = $_POST['userid'];
+            $main1['field'] =  $fieldArr[$i];
+            $main1['fromdate'] = $fromeduArr[$i];
+            $main1['todate'] = $toeduArr[$i];
+             $db = db_connect();
+            $builder = $db->table('employee_education');
+            $builder->insert($main1);
+        }
     }
      public function updateonboardemployeedetails()
     {
@@ -2552,6 +2576,8 @@ class Users extends BaseController
             $roleid = (isset($_GET['roleid']) && $_GET['roleid'] != "") ? $_GET['roleid'] : NULL;
             $active = (isset($_GET['active']) && $_GET['active'] != "") ? $_GET['active'] : 1;
             $data['EmployeeDetails'] = $usersModel->getAllEmployeeDetailsfilter($branchid, $roleid, $active);
+            $data['Employeework'] = $usersModel->Employeework($data['details'][0]->userid);
+            $data['Employeeeducation'] = $usersModel->Employeeeducation($data['details'][0]->userid);
             $helperModel = new HelperModel();
             $data['nextemployeeid'] = $helperModel->get_nextemployeeidcounter();
             $helperModel = new HelperModel();

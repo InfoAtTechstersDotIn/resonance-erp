@@ -41,13 +41,13 @@ class WalletModel extends Model
 
     public function getWalletTransactions($userid, $walletid = NULL)
     {
+        
         $db = db_connect();
 
-        if ($walletid == NULL) {
+        if ($walletid == NULL || $walletid =='') {
             $query = $db->query("SELECT * FROM wallet 
                                  JOIN wallettypelookup ON wallettypelookup.wallettypeid = wallet.wallettypeid
                                  JOIN wallettransactions ON wallettransactions.walletid = wallet.walletid
-                                 LEFT JOIN employeedetails ON wallettransactions.transactedby = employeedetails.userid
                                  LEFT JOIN employeedetails ON wallettransactions.transactedby = employeedetails.userid
                                  LEFT JOIN paymenttypelookup ON wallettransactions.paymenttypeid = paymenttypelookup.paymenttypeid
                                  WHERE wallet.userid = {$userid}");

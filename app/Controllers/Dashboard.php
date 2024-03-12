@@ -14,7 +14,7 @@ class Dashboard extends BaseController
 
     public function index()
     {
-        if ($_SESSION['userdetails'] == null) {
+        if (!isset($_SESSION['userdetails'])) {
 			return redirect()->to(base_url());
 		} else {
             $data['page_name'] = 'dashboard';
@@ -27,7 +27,7 @@ class Dashboard extends BaseController
     }
     public function version()
     {
-        if ($_SESSION['userdetails'] == null) {
+        if (!isset($_SESSION['userdetails'])) {
 			return redirect()->to(base_url());
 		} else {
             $data['page_name'] = 'version';

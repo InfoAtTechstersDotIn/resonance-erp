@@ -163,7 +163,9 @@
 
                                 foreach ($EmployeeDetails as $result) :
 
-                                    $branchids = explode(',', $result->branchid);
+                                    $branchids = explode(',', $result->branchid ?? '');
+                                    
+
                                     if (isset($_GET['branchid'])) {
                                         if ($_GET['branchid'] == "" || in_array($_GET['branchid'], $branchids)) {
                                         } else {

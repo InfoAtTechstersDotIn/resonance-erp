@@ -803,7 +803,7 @@ else :
                                           </div>
                                        <?php
                                        endif; ?>
-
+                                        <?php if($chequeDetails){ ?>
                                        <div class="row">
                                           <div class="col-md-4">
                                              <label class="text-uppercase text-sm">Cheque 1</label>
@@ -818,6 +818,7 @@ else :
                                              <input type="text" name="cheque_3" value="<?php echo $chequeDetails[2]; ?>" class="form-control mb">
                                           </div>
                                        </div>
+                                       <?php } ?>
                                     </div>
 
                                     <div id="Editapplication_<?php echo $StudentDetail->batchid;?>" class="tab-pane fade">

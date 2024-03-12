@@ -1,4 +1,4 @@
-// <?php
+<?php
 if ($_SESSION['rights'] != null) : ?>
     <nav class="ts-sidebar">
         <ul class="ts-sidebar-menu">
@@ -8,8 +8,13 @@ if ($_SESSION['rights'] != null) : ?>
                     <a href="#"><i class="fa fa-calendar"></i>Applications</a><i class="fa fa-angle-double-right" hidden></i>
                 </li>
                 <ul class="sub-menu collapse" id="Application">
+                    <?php if($_SESSION["activebatch"]==3){
+                        ?>
+                        <li style="margin-left: 30px;"><a href="<?php echo base_url('agentdashboard/addApplicant') ?>"><i class="fa fa-calendar"></i>Add Application</a></li>
+                        <?php
+                    }
+                    ?>
                     
-                    <!--<li style="margin-left: 30px;"><a href="<?php echo base_url('agentdashboard/addApplicant') ?>"><i class="fa fa-calendar"></i>Add Application</a></li>-->
                    <!--<li style="margin-left: 30px;"><a href="<?php echo base_url('agentdashboard/RetApplications') ?>"><i class="fa fa-calendar"></i>View RET Eligible Leads</a></li>-->
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('agentdashboard/Applications') ?>"><i class="fa fa-calendar"></i>View Applications</a></li>
 

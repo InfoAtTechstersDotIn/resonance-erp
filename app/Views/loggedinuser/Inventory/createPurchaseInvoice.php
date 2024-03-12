@@ -16,7 +16,7 @@
                     </div>
                     <div class="col-lg-6">
                         <label class="text-uppercase text-sm">Vendor</label>
-                        <select id="vendor_id" name="vendor_id" style="width: 100%;" class="form-control mb">
+                        <select id="vendor_id" name="vendor_id" style="width: 100%;" class="form-control mb" required>
                             <option value="">Select Vendor</option>
                             <?php foreach ($vendors as $vendor): ?>
                                 <option value="<?php echo $vendor->id; ?>">
@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-lg-6">
                         <label class="text-uppercase text-sm">Warehouse</label>
-                        <select id="warehouse_id" name="warehouse_id" style="width: 100%;" class="form-control mb">
+                        <select id="warehouse_id" name="warehouse_id" style="width: 100%;" class="form-control mb" required>
                             <option value="">Select Warehouse</option>
                             <?php foreach ($warehouses as $warehouse): ?>
                                 <option value="<?php echo $warehouse->id; ?>">
@@ -253,7 +253,7 @@
         let total = 0;
         document.querySelectorAll('.total_input').forEach((element) => {
             if (element.value != "") {
-                total += parseInt(element.value)
+                total += parseFloat(element.value)
             }
         });
         document.getElementById('total_amount').innerHTML = total.toFixed(2);

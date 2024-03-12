@@ -15,7 +15,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <select onchange="handleFilterBuildingFrom(event)" name="branch_id_from" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleFilterBuildingFrom(event)" name="branch_id_from" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Branch</option>
                                     <?php foreach ($lookups['branchlookup'] as $branch) : ?>
                                         <option value="<?php echo $branch->branchid; ?>"><?php echo $branch->branchname; ?></option>
@@ -24,7 +24,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <select onchange="handleFilterFloorFrom(event)" id="building_id_from" name="building_id_from" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleFilterFloorFrom(event)" id="building_id_from" name="building_id_from" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Building</option>
                                     <?php foreach ($buildings as $building) : ?>
                                         <option style="display: none;" data-building-branch-id="<?php echo $building->branch_id; ?>" value="<?php echo $building->id; ?>"><?php echo $building->name; ?></option>
@@ -33,7 +33,7 @@
                             </div>
                                     
                             <div class="col-md-12">
-                                <select onchange="handleFilterRoomFrom(event)" id="floor_id_from" name="floor_id_from" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleFilterRoomFrom(event)" id="floor_id_from" name="floor_id_from" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Floor</option>
                                     <?php foreach ($floors as $floor) : ?>
                                         <option style="display: none;" data-floor-building-id="<?php echo $floor->building_id; ?>" value="<?php echo $floor->id; ?>"><?php echo $floor->name; ?></option>
@@ -42,10 +42,19 @@
                             </div>
                                     
                             <div class="col-md-12">
-                                <select onchange="handleGetItem('ROOM', event)" id="room_id_from" name="room_id_from" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleGetItem('ROOM', event)" id="room_id_from" name="room_id_from" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Room</option>
                                     <?php foreach ($rooms as $room) : ?>
                                         <option style="display: none;" data-room-floor-id="<?php echo $room->floor_id; ?>" value="<?php echo $room->id; ?>"><?php echo $room->name; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <select id="area_id_from" name="area_id_from" style="width: 100%;" class="form-control mb" required>
+                                    <option value="">Select Area</option>
+                                    <?php foreach ($areas as $area) : ?>
+                                        <option value="<?php echo $area->id; ?>"><?php echo $area->name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -61,7 +70,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <select onchange="handleFilterBuildingTo(event)" name="branch_id_to" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleFilterBuildingTo(event)" name="branch_id_to" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Branch</option>
                                     <?php foreach ($lookups['branchlookup'] as $branch) : ?>
                                         <option value="<?php echo $branch->branchid; ?>"><?php echo $branch->branchname; ?></option>
@@ -70,7 +79,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <select onchange="handleFilterFloorTo(event)" id="building_id_to" name="building_id_to" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleFilterFloorTo(event)" id="building_id_to" name="building_id_to" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Building</option>
                                     <?php foreach ($buildings as $building) : ?>
                                         <option style="display: none;" data-building-branch-id="<?php echo $building->branch_id; ?>" value="<?php echo $building->id; ?>"><?php echo $building->name; ?></option>
@@ -79,7 +88,7 @@
                             </div>
                                     
                             <div class="col-md-12">
-                                <select onchange="handleFilterRoomTo(event)" id="floor_id_to" name="floor_id_to" style="width: 100%;" class="form-control mb">
+                                <select onchange="handleFilterRoomTo(event)" id="floor_id_to" name="floor_id_to" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Floor</option>
                                     <?php foreach ($floors as $floor) : ?>
                                         <option style="display: none;" data-floor-building-id="<?php echo $floor->building_id; ?>" value="<?php echo $floor->id; ?>"><?php echo $floor->name; ?></option>
@@ -88,10 +97,19 @@
                             </div>
                                     
                             <div class="col-md-12">
-                                <select id="room_id_to" name="room_id_to" style="width: 100%;" class="form-control mb">
+                                <select id="room_id_to" name="room_id_to" style="width: 100%;" class="form-control mb" required>
                                     <option value="">Select Room</option>
                                     <?php foreach ($rooms as $room) : ?>
                                         <option style="display: none;" data-room-floor-id="<?php echo $room->floor_id; ?>" value="<?php echo $room->id; ?>"><?php echo $room->name; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <select id="area_id_to" name="area_id_to" style="width: 100%;" class="form-control mb" required>
+                                    <option value="">Select Area</option>
+                                    <?php foreach ($areas as $area) : ?>
+                                        <option value="<?php echo $area->id; ?>"><?php echo $area->name; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>

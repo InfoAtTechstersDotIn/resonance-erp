@@ -54,7 +54,7 @@
 							?>
 	</h4>
 
-	<?php if (count($_SESSION) > 0 && $_SESSION['userdetails'] != null) : ?>
+	<?php if (isset($_SESSION['userdetails'])) : ?>
 		<div class="mob_res" style="margin:20px 20px 20px 20px;float:right">
 			<b style="color: white;">Search</b>
 			<input type="text" id="tags" style="width: 25vw;" />

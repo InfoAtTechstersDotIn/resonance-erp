@@ -16,6 +16,8 @@
                         <li class="active"><a id="BasicTab" data-toggle="tab" href="#basic">Personal Details</a></li>
                         <li><a id="AddressTab" data-toggle="tab" href="#address">Address</a></li>
                         <li><a id="FamilyTab" data-toggle="tab" href="#family">Family Details</a></li>
+                        <li><a id="WorkTab" data-toggle="tab" href="#work">Work Experience</a></li>
+                        <li><a id="EducationTab" data-toggle="tab" href="#education">Education</a></li>
                         <li><a id="PreviewTab" data-toggle="tab" href="#preview" onclick="generatePreview()">Preview & Create</a></li>
                     </ul>
 
@@ -163,6 +165,47 @@
                                 </div>
                                 <div class="col-md-3">
                                     <a class="btn btn-primary" onclick="$('#AddressTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="btn btn-primary" onclick="$('#WorkTab').click()">Next</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="work" class="tab-pane fade">
+                            <br />
+                            <button type="button" name="addmore" id="addmore" class="btn btn-success">Add Work Experience</button>
+                                       <br /><br />
+                                        <div id="getslots">
+                                        
+                                        </div>
+                            
+                            <br />
+                           
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="btn btn-primary" onclick="$('#FamilyTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="btn btn-primary" onclick="$('#EducationTab').click()">Next</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="education" class="tab-pane fade">
+                            <br />
+                             <button type="button" name="addmore1" id="addmore1" class="btn btn-success">Add Education</button>
+                                       <br /><br />
+                                        <div id="getslots1">
+                                        
+                                        </div>
+                            <br />
+                           
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="btn btn-primary" onclick="$('#WorkTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
                                     <a class="btn btn-primary" onclick="$('#PreviewTab').click()">Next</a>
                                 </div>
                             </div>
@@ -218,7 +261,7 @@
                                     <button type="submit" name="createstudent" class="btn btn-primary">Create Application</button>
                                 </div>
                                 <div class="col-md-5">
-                                    <a class="btn btn-primary" onclick="$('#FamilyTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="btn btn-primary" onclick="$('#EducationTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
                                     <a class="btn btn-primary" onclick="print_preview()">Print Application</a>
                                 </div>
                             </div>
@@ -360,4 +403,31 @@
             
 
         }
-    </script>
+        
+        var i=1; 
+var rowcount = 0;
+     $('#addmore').click(function(){ 
+           i++;  
+           rowcount++;
+           $('#getslots').append('<tr id="row'+i+'" class="dynamic-added"></td><td>&nbsp;</td><td><label>Title</label><input type="text" name="title[]" placeholder="Title" class="form-control" /></td><td>&nbsp;<td><label>Company</label><input type="text" name="company[]" placeholder="Company" class="form-control" /></td><td>&nbsp;</td></td><td><label>From Date</label><input type="date" name="from[]" placeholder="Serial No" class="form-control" value="" required/></td><td>&nbsp;</td><td><label>To Date</label><input type="date" name="to[]" placeholder="Serial No" class="form-control" value="" required/></td><td>&nbsp;</td><td><label></label><br><button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove">X</button></td></tr>');
+      });
+      
+      $(document).on('click', '.btn_remove', function(){  
+           var button_id = $(this).attr("id");   
+           $('#row'+button_id+'').remove();  
+      }); 
+      
+      
+       var a=1; 
+var rowcount1 = 0;
+     $('#addmore1').click(function(){ 
+           a++;  
+           rowcount1++;
+           $('#getslots1').append('<tr id="row'+a+'" class="dynamic-added"></td><td>&nbsp;</td><td><label>Title</label><input type="text" name="level[]" placeholder="Level Of Education" class="form-control" /></td><td>&nbsp;<td><label>Field of study</label><input type="text" name="field[]" placeholder="Field of Study" class="form-control" /></td><td>&nbsp;</td></td><td><label>From Date</label><input type="date" name="fromeducation[]" placeholder="Serial No" class="form-control" value="" required/></td><td>&nbsp;</td><td><label>To Date</label><input type="date" name="toeducation[]" placeholder="Serial No" class="form-control" value="" required/></td><td>&nbsp;</td><td><label></label><br><button type="button" name="remove" id="'+a+'" class="btn btn-danger btn_remove">X</button></td></tr>');
+      });
+      
+      $(document).on('click', '.btn_remove', function(){  
+           var button_id = $(this).attr("id");   
+           $('#row'+button_id+'').remove();  
+      }); 
+</script>

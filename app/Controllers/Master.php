@@ -372,7 +372,6 @@ class Master extends BaseController
         }
     }
     // SUBJECT
-
     public function buildings()
     {
         if ($_SESSION['userdetails'] != null) {

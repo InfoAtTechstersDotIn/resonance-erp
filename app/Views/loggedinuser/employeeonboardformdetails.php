@@ -16,6 +16,8 @@
                         <li class="active"><a id="BasicTab" data-toggle="tab" href="#basic">Personal Details</a></li>
                         <li><a id="AddressTab" data-toggle="tab" href="#address">Address</a></li>
                         <li><a id="FamilyTab" data-toggle="tab" href="#family">Family Details</a></li>
+                        <li><a id="WorkTab" data-toggle="tab" href="#work">Work Experience</a></li>
+                        <li><a id="EducationTab" data-toggle="tab" href="#education">Education</a></li>
                         <li><a id="AdditionalTab" data-toggle="tab" href="#additional">Additional Details</a></li>
                         <li><a id="PreviewTab" data-toggle="tab" href="#preview" onclick="generatePreview()">Preview & Create</a></li>
                     </ul>
@@ -165,6 +167,87 @@
                                 </div>
 
                             </div>
+                            <br />
+
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="btn btn-primary" onclick="$('#AddressTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="btn btn-primary" onclick="$('#AdditionalTab').click()">Next</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="work" class="tab-pane fade">
+                            <br />
+                            <?php foreach($Employeework as $work){ 
+                                ?>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="text-uppercase f-16">Title</label>
+                                    <input type="text" name="father" id="father" value="<?php echo $work->title; ?>" placeholder="Father Name" class='form-control mb' required />
+
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="text-uppercase f-16">Company</label>
+                                    <input type='text' name='mother' id='mother' placeholder="Mother Name" value="<?php echo $work->company; ?>" class='form-control mb'>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="text-uppercase f-16">From Date</label>
+                                    <input type='text' name='spouse' id='spouse' placeholder="Spouse Name" value="<?php echo $work->fromdate; ?>" class='form-control mb'>
+                                </div>
+                                 <div class="col-md-3">
+                                    <label class="text-uppercase f-16">To date</label>
+                                    <input type='text' name='spouse' id='spouse' placeholder="Spouse Name" value="<?php echo $work->todate; ?>" class='form-control mb'>
+                                </div>
+
+                            </div>
+                            <?php } ?>
+                            <br />
+
+                            <br />
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                </div>
+                                <div class="col-md-3">
+                                    <a class="btn btn-primary" onclick="$('#AddressTab').click()">Previous</a>&nbsp;&nbsp;&nbsp;
+                                    <a class="btn btn-primary" onclick="$('#AdditionalTab').click()">Next</a>
+                                </div>
+                            </div>
+                        </div>
+                         <div id="education" class="tab-pane fade">
+                            <br />
+                            <?php foreach($Employeeeducation as $work){ 
+                                ?>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label class="text-uppercase f-16">Level Of Study</label>
+                                    <input type="text" name="father" id="father" value="<?php echo $work->level; ?>" placeholder="Father Name" class='form-control mb' required />
+
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="text-uppercase f-16">Field</label>
+                                    <input type='text' name='mother' id='mother' placeholder="Mother Name" value="<?php echo $work->field; ?>" class='form-control mb'>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="text-uppercase f-16">From Date</label>
+                                    <input type='text' name='spouse' id='spouse' placeholder="Spouse Name" value="<?php echo $work->fromdate; ?>" class='form-control mb'>
+                                </div>
+                                 <div class="col-md-3">
+                                    <label class="text-uppercase f-16">To date</label>
+                                    <input type='text' name='spouse' id='spouse' placeholder="Spouse Name" value="<?php echo $work->todate; ?>" class='form-control mb'>
+                                </div>
+
+                            </div>
+                            <?php } ?>
                             <br />
 
                             <br />
