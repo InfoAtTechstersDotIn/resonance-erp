@@ -2216,6 +2216,7 @@ class Inventory extends BaseController
                 $data['manufacturer_serial_no'] = $result->manufacturer_serial_no;
                 $data['product_serial_no'] = $result->product_serial_no;
                 $data['purchase_invoice_item_id'] = $value;
+                $data['warehouse_id'] = $_POST['warehouse_id'];
                 $data['branch_id'] = $_POST['branch_id'];
                 $data['building_id'] = $_POST['building_id'];
                 $data['floor_id'] = $_POST['floor_id'];
@@ -2424,6 +2425,35 @@ class Inventory extends BaseController
             JOIN purchase_invoices ON purchase_invoice_items.purchase_invoice_id = purchase_invoices.id 
             JOIN warehouses ON purchase_invoices.warehouse_id = warehouses.id WHERE purchase_invoice_items.status = 'unallocated' 
             GROUP BY purchase_invoice_items.product_id, purchase_invoices.warehouse_id, warehouses.name;");
+            $data['products'] = $query->getResult();
+            
+            return view('loggedinuser/index.php', $data);
+        } else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function warehouse_allocation_history()
+    {
+        if ($_SESSION['userdetails'] != null) {
+            $data['page_name'] = 'Inventory/warehouseAllocationHistory';
+            
+            $db = db_connect();
+            $query = $db->query("SELECT allocated_assets.*, 
+                warehouses.name as warehouse_name,
+                product.name as product_name, 
+                branchlookup.branchname as branch_name,
+                buildings.name as building_name,
+                floors.name as floor_name,
+                rooms.name as room_name
+                FROM allocated_assets 
+                JOIN warehouses ON allocated_assets.warehouse_id = warehouses.id
+                JOIN product ON allocated_assets.product_id = product.id
+                JOIN branchlookup ON allocated_assets.branch_id = branchlookup.branchid
+                JOIN buildings ON allocated_assets.building_id = buildings.id
+                JOIN floors ON allocated_assets.floor_id = floors.id
+                JOIN rooms ON allocated_assets.room_id = rooms.id
+            ");
             $data['products'] = $query->getResult();
             
             return view('loggedinuser/index.php', $data);

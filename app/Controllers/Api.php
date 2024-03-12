@@ -4567,11 +4567,29 @@ class Api extends ResourceController
         ]);
     }
 
+    // SELECT SD.userid, SD.email,BL.branchname, SD.applicationnumber,SCR.branchid,SCR.sectionid,
+    //             SD.name, SD.fathername, SD.mothername, CL.coursename, CL.courseid,  SL.sectionname,SAD.date,SAD.status FROM studentdetails SD
+    //                           LEFT JOIN student_class_relation SCR ON SD.userid = SCR.studentid
+    //                           LEFT JOIN branchlookup BL ON SCR.branchid = BL.branchid
+    //                           LEFT JOIN batchlookup BAL ON SCR.batchid = BAL.batchid
+    //                           LEFT JOIN courselookup CL ON SCR.courseid = CL.courseid 
+    //                           LEFT JOIN sectionlookup SL ON SCR.sectionid = SL.sectionid
+    //                           LEFT JOIN student_attendance_details SAD ON SAD.user_id = SD.userid
+
     public function get_warehouse_item($id, $product_id) 
     {
         $db = db_connect();
-        $query = $db->query("SELECT purchase_invoice_items.*, product.name as product_specification_name, manufacturers.name as manufacturer_name, warehouses.name as warehouse_name, purchase_invoices.warehouse_id, warehouses.name FROM purchase_invoice_items 
+        $query = $db->query("SELECT purchase_invoice_items.*, 
+            product.name as product_specification_name, 
+            manufacturers.name as manufacturer_name, 
+            warehouses.name as warehouse_name, 
+            purchase_invoices.warehouse_id, 
+            product.product_type_id, 
+            product_type.name as product_type,
+            warehouses.name 
+            FROM purchase_invoice_items 
             JOIN product ON purchase_invoice_items.product_id = product.id 
+            JOIN product_type ON product.product_type_id = product_type.id 
             JOIN manufacturers ON purchase_invoice_items.manufacturer_id = manufacturers.id 
             JOIN purchase_invoices ON purchase_invoice_items.purchase_invoice_id = purchase_invoices.id 
             JOIN warehouses ON purchase_invoices.warehouse_id = warehouses.id WHERE purchase_invoice_items.status = 'unallocated' AND purchase_invoices.warehouse_id = ".$id." AND product.id = ".$product_id."");

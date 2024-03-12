@@ -32,7 +32,7 @@
                     
                     <div class="col-lg-6">
                         <label class="text-uppercase text-sm">Warehouse</label>
-                        <select onchange="handleGetVarehouseItem(event)" style="width: 100%;" class="form-control mb">
+                        <select onchange="handleGetVarehouseItem(event)" name="warehouse_id" style="width: 100%;" class="form-control mb">
                             <option value="">Select Warehouse</option>
                             <?php foreach ($warehouses as $warehouse): ?>
                                 <option value="<?php echo $warehouse->id; ?>">
@@ -225,9 +225,7 @@
         .then(response => {
             return response.json();
         })
-        .then(data => {    
-
-            console.log(data.data.invoice_items);
+        .then(data => { 
             
             data.data.invoice_items.forEach((element,index) => {
 
