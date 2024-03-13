@@ -57,7 +57,8 @@
                                 <tr>
                                     <th>QR Code</th>
                                     <th>Product</th>
-                                    <th>Manufacturer</th>
+                                    <th>Quantity</th>
+                                    <th>Manufacturer Serial No</th>
                                     <th>Product Serial No</th>
                                 </tr>
                             </thead>
@@ -135,22 +136,27 @@
                 
                 let product_qr = document.createElement('td');
                 
-                let qr_image = document.createElement('img');
-                qr_image.src = "<?php echo str_replace('public','',base_url('')) ?>/" + element.qr_image_path;
-                qr_image.style.height = "100px";
-                qr_image.style.width = "100px";
-                product_qr.append(qr_image);
-
+                if (element.qr_image_path) {
+                    let qr_image = document.createElement('img');
+                    qr_image.src = "<?php echo str_replace('public','',base_url('')) ?>/" + element.qr_image_path;
+                    qr_image.style.height = "100px";
+                    qr_image.style.width = "100px";
+                    product_qr.append(qr_image);
+                }
+        
                 let product_specification_name = document.createElement('td');
                 product_specification_name.innerHTML =element.product_specification_name;
-
-                let manufacturer_name = document.createElement('td');
-                manufacturer_name.innerHTML =element.manufacturer_name;
+        
+                let quantity_name = document.createElement('td');
+                quantity_name.innerHTML =element.quantity;
+        
+                let manufacturer_serial_no = document.createElement('td');
+                manufacturer_serial_no.innerHTML =element.manufacturer_serial_no;
 
                 let product_serial_no = document.createElement('td');
                 product_serial_no.innerHTML =element.product_serial_no;
                 
-                parentDiv.append(product_qr, product_specification_name, manufacturer_name, product_serial_no);
+                parentDiv.append(product_qr, product_specification_name, quantity_name, manufacturer_serial_no, product_serial_no);
                 document.getElementById('items-list-table').appendChild(parentDiv);
             });
 

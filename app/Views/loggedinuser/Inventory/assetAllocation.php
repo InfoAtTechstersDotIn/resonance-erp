@@ -7,7 +7,7 @@
 
                 <div class="row">
 
-                    <div class="col-lg-6">
+                    <!-- <div class="col-lg-6">
                         <label class="text-uppercase text-sm">Category</label>
                         <select onchange="handleFilterSpecification(event)" name="category_id" style="width: 100%;" class="form-control mb" required>
                             <option value="">Select Category</option>
@@ -27,8 +27,7 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                    </div>
-
+                    </div> -->
                     
                     <div class="col-lg-6">
                         <label class="text-uppercase text-sm">Warehouse</label>
@@ -46,16 +45,17 @@
                         <div>
                             <h4>Product List</h4>
                         </div>
-                        <div class="form-check" style="margin-bottom: 7px;">
+                        <!-- <div class="form-check" style="margin-bottom: 7px;">
                             <input class="form-check-input" onchange="checkAllCheckboxes()" type="checkbox" id="select_all_checkbox">
                             <label class="form-check-label" for="select_all_checkbox">Select All Items</label>
-                        </div>
+                        </div> -->
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Manufacturer</th>
-                                    <th>Product Serial No</th>
+                                    <th>Available Quantity</th>
+                                    <th>Allocation Quantity</th>
+                                    <th>Manufacturer Serial No</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -194,45 +194,88 @@
         }
     }
     
-    function handleGetWarehouseItem() {
-
-        let product_id = document.getElementById('product_specification_id').value;
-        let warehouse_id = document.getElementById('warehouse_id').value;
+    function handleGetWarehouseItem(event) {
 
         document.getElementById('items-list-table').innerHTML = '';
 
-        fetch('<?php echo base_url('api/get_warehouse_item') ?>/' + warehouse_id + '/' + product_id)
+        fetch(`<?php echo base_url('api/get_warehouse_items') ?>/${event.target.value}`)
         .then(response => {
             return response.json();
         })
         .then(data => { 
 
+            console.log(data.data);
             
-            data.data.invoice_items.forEach((element,index) => {
+            data.data.forEach((element,index) => {
 
                 let parentDiv = document.createElement('tr');
                 
-                let product_specification_name = document.createElement('td');
-                product_specification_name.innerHTML =element.product_specification_name;
+                let product_name_col = document.createElement('td');
+                product_name_col.innerHTML = element.product_name;
 
-                let manufacturer_name = document.createElement('td');
-                manufacturer_name.innerHTML =element.manufacturer_name;
+                let available_quantity_col = document.createElement('td');
+                available_quantity_col.innerHTML = element.available_quantity;
 
-                let product_serial_no = document.createElement('td');
-                product_serial_no.innerHTML =element.product_serial_no;
+                let allocation_quantity_col = document.createElement('td');
+                let allocation_quantity_input = document.createElement('input');
+                allocation_quantity_input.type = "number";
+                allocation_quantity_input.name = "allocation_quantity[]";
+                allocation_quantity_input.min = 1;
+                allocation_quantity_input.required = true;
+                allocation_quantity_input.placeholder = "Quantity";
+                allocation_quantity_input.style.width = "100px";
+                allocation_quantity_input.style.outline = "none";
+                allocation_quantity_input.max = element.available_quantity;
+                if (element.product_type == "asset") {
+                    allocation_quantity_input.value = 1;
+                    allocation_quantity_input.readOnly = true;
+                }
+                allocation_quantity_col.append(allocation_quantity_input);
 
-                let action = document.createElement('td');
-                let checkbox = document.createElement('input');
-                checkbox.type = "checkbox";
-                checkbox.name = "product_id[]";
-                checkbox.value = element.id;
-                action.append(checkbox);
-
-                parentDiv.append(product_specification_name, manufacturer_name, product_serial_no, action);
+                let manufacturer_serial_no_col = document.createElement('td');
+                manufacturer_serial_no_col.innerHTML = element.manufacturer_serial_no;
                 
+                let options = document.createElement('td');
+
+                let selectOption = document.createElement('select');
+                selectOption.name = "selected_item[]";
+
+                let option1 =document.createElement('option');
+                option1.value = "SELECTED";
+                option1.innerHTML = "Add Item";
+
+                let option2 =document.createElement('option');
+                option2.value = "NOT_SELECTED";
+                option2.innerHTML = "Not Added";
+                option2.selected = true;
+
+                selectOption.append(option1, option2);
+            
+                let warehouse_item_id = document.createElement('input');
+                warehouse_item_id.type = "hidden";
+                warehouse_item_id.name = "warehouse_item_id[]";
+                warehouse_item_id.value = element.id;
+
+                let product_id = document.createElement('input');
+                product_id.type = "hidden";
+                product_id.name = "product_id[]";
+                product_id.value = element.product_id;
+
+                let manufacturer_serial_no = document.createElement('input');
+                manufacturer_serial_no.type = "hidden";
+                manufacturer_serial_no.name = "manufacturer_serial_no[]";
+                manufacturer_serial_no.value = element.manufacturer_serial_no;
+
+                let product_serial_no = document.createElement('input');
+                product_serial_no.type = "hidden";
+                product_serial_no.name = "product_serial_no[]";
+                product_serial_no.value = element.product_serial_no;
+
+                options.append(selectOption, manufacturer_serial_no, product_serial_no, warehouse_item_id, product_id);
+
+                parentDiv.append(product_name_col, available_quantity_col, allocation_quantity_col, manufacturer_serial_no_col, options);
                 document.getElementById('items-list-table').appendChild(parentDiv);
 
-                
             });
         })
         .catch(error => {

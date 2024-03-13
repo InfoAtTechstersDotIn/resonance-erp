@@ -17,6 +17,7 @@ use App\Models\PurchaseInvoiceModel;
 use App\Models\RoomModel;
 use App\Models\UsersModel;
 use App\Models\ReservationModel;
+use App\Models\WarehouseItemModel;
 use App\Models\WarehouseModel;
 
 require_once( APPPATH . 'ThirdParty/phpqrcode/qrlib.php');
@@ -2130,8 +2131,6 @@ class Inventory extends BaseController
 
             foreach ($_POST['manufacturer_id'] as $key => $value) {
 
-                for ($i = 1; $i <= $_POST['quantity'][$key]; $i++) { 
-
                     $db = db_connect();
                     $query = $db->query('SELECT COUNT(*) AS product_count FROM purchase_invoice_items WHERE product_id = '.$_POST['product_id'][$key].';');        
                     $product_count = $query->getRow()->product_count;
@@ -2144,15 +2143,60 @@ class Inventory extends BaseController
                         'purchase_invoice_id' => $purchaseInvoiceId,
                         'manufacturer_id' => $_POST['manufacturer_id'][$key],
                         'product_id' => $_POST['product_id'][$key],
-                        'quantity' => 1,
+                        'quantity' => $_POST['quantity'][$key],
                         'price' => $_POST['price'][$key],
                         'gst' => $_POST['gst'][$key],
                         'total' => $_POST['total'][$key],
                         'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
                         'product_serial_no' => $product_code . "-" . $product_count
                     ]);
+
+
+                    $db = db_connect();
+                    $query = $db->query("SELECT * FROM product WHERE id = ". $_POST['product_id'][$key].";");
+                    $prduct = $query->getRow();
+                    
+                    if ($prduct->product_type_id == 2) {
+
+                        $query = $db->query("SELECT * FROM warehouse_items WHERE product_id = " . $_POST['product_id'][$key] . " AND warehouse_id = ".$_POST['warehouse_id']."");
+                        $warehouse_item = $query->getRow();
+
+                        if ($warehouse_item) {
+                            
+                            $update_data = [];
+                            $update_data['total_quantity'] = $warehouse_item->total_quantity + $_POST['quantity'][$key];
+                            $update_data['available_quantity'] = $warehouse_item->available_quantity + $_POST['quantity'][$key];
+
+                            $warehouseItemModel = new WarehouseItemModel();
+                            $warehouseItemModel->update_warehouse_item($_POST['product_id'][$key], $_POST['warehouse_id'], $update_data);
+
+                        }
+                        else {
+
+                            $add_data = [];
+                            $add_data['warehouse_id'] = $_POST['warehouse_id'];
+                            $add_data['product_id'] = $_POST['product_id'][$key];
+                            $add_data['total_quantity'] = $_POST['quantity'][$key];
+                            $add_data['available_quantity'] = $_POST['quantity'][$key];
+
+                            $warehouseItemModel = new WarehouseItemModel();
+                            $warehouseItemModel->add_warehouse_item($add_data);
+                        }
+                    }
+                    else {
+
+                        $add_data = [];
+                        $add_data['warehouse_id'] = $_POST['warehouse_id'];
+                        $add_data['product_id'] = $_POST['product_id'][$key];
+                        $add_data['total_quantity'] = $_POST['quantity'][$key];
+                        $add_data['available_quantity'] = $_POST['quantity'][$key];
+                        $add_data['manufacturer_serial_no'] = $_POST['manufacturer_serial_no'][$key];
+                        $add_data['product_serial_no'] = $product_code . "-" . $product_count;
+
+                        $warehouseItemModel = new WarehouseItemModel();
+                        $warehouseItemModel->add_warehouse_item($add_data);
+                    }
                 }
-            }
 
             return redirect()->to(base_url('Inventory/purchase_invoices'));
 
@@ -2202,41 +2246,63 @@ class Inventory extends BaseController
         }
     }
 
-     public function add_asset_allocation()
+    public function add_asset_allocation()
     {
         if ($_SESSION['userdetails'] != null) {
             
-            foreach ($_POST['product_id'] as $key => $value) {
-                $purchaseInvoiceItemModel = new PurchaseInvoiceItemModel();
-                $result = $purchaseInvoiceItemModel->mark_item_as_allocated($value);
+            foreach ($_POST['selected_item'] as $key => $value) {
 
-                $data = [];
-                $data['product_id'] = $result->product_id;
-                $data['manufacturer_id'] = $result->manufacturer_id;
-                $data['manufacturer_serial_no'] = $result->manufacturer_serial_no;
-                $data['product_serial_no'] = $result->product_serial_no;
-                $data['purchase_invoice_item_id'] = $value;
-                $data['warehouse_id'] = $_POST['warehouse_id'];
-                $data['branch_id'] = $_POST['branch_id'];
-                $data['building_id'] = $_POST['building_id'];
-                $data['floor_id'] = $_POST['floor_id'];
-                $data['room_id'] = $_POST['room_id'];
-                $data['area_id'] = $_POST['area_id'];
-                $path = 'qrcode/'.rand(9999999,100000000).'.png';
-                $data['qr_image_path'] = "public/$path";
+                // $purchaseInvoiceItemModel = new PurchaseInvoiceItemModel();
+                // $result = $purchaseInvoiceItemModel->mark_item_as_allocated($value);
 
-                $model = new AllocatedAssetsModel();
-                $allocated_asset_id = $model->add_allocated_assets($data);
+                if ($value == "SELECTED") {
 
-                $qr_data = [
-                    'product_id' => $result->product_id,
-                    'manufacturer_serial_no' =>  $result->manufacturer_serial_no,
-                    'product_serial_no' =>  $result->product_serial_no,
-                    'allocated_asset_id' => $allocated_asset_id
-                ];
+                    $data = [];
+                    $data['product_id'] = $_POST['product_id'][$key];
+                    $data['manufacturer_serial_no'] = $_POST['manufacturer_serial_no'][$key];
+                    $data['product_serial_no'] = $_POST['product_serial_no'][$key];
+                    $data['quantity'] = $_POST['allocation_quantity'][$key];
+                    $data['warehouse_id'] = $_POST['warehouse_id'];
+                    $data['branch_id'] = $_POST['branch_id'];
+                    $data['building_id'] = $_POST['building_id'];
+                    $data['floor_id'] = $_POST['floor_id'];
+                    $data['room_id'] = $_POST['room_id'];
+                    $data['area_id'] = $_POST['area_id'];
 
-                \QRcode::png(json_encode($qr_data), FCPATH . $path);
+                    $db = db_connect();
+                    $query = $db->query("SELECT * FROM product WHERE id = ". $_POST['product_id'][$key].";");
+                    $prduct = $query->getRow();
+                        
+                    if ($prduct->product_type_id == 1) {
+                        $path = 'qrcode/'.rand(9999999,100000000).'.png';
+                        $data['qr_image_path'] = "public/$path";
+                    }
 
+                    $model = new AllocatedAssetsModel();
+                    $allocated_asset_id = $model->add_allocated_assets($data);
+
+                    if ($prduct->product_type_id == 1) {
+                        $qr_data = [
+                            'product_id' => $_POST['product_id'][$key],
+                            'manufacturer_serial_no' => $_POST['manufacturer_serial_no'][$key],
+                            'product_serial_no' => $_POST['product_serial_no'][$key],
+                            'allocated_asset_id' => $allocated_asset_id
+                        ];
+                        \QRcode::png(json_encode($qr_data), FCPATH . $path);
+                    }
+
+                    $query = $db->query("SELECT * FROM warehouse_items WHERE id = " . $_POST['warehouse_item_id'][$key]."");
+                    $warehouse_item = $query->getRow();
+
+                    if ($warehouse_item) {
+                                
+                        $update_data = [];
+                        $update_data['available_quantity'] = $warehouse_item->available_quantity - $_POST['allocation_quantity'][$key];
+
+                        $warehouseItemModel = new WarehouseItemModel();
+                        $warehouseItemModel->update_warehouse_single_item($_POST['warehouse_item_id'][$key], $update_data);
+                    }   
+                }
             }
             
             return redirect()->to(base_url('Inventory/asset_allocation'));
@@ -2423,13 +2489,8 @@ class Inventory extends BaseController
         if ($_SESSION['userdetails'] != null) {
             $data['page_name'] = 'Inventory/warehouseDetails';
             
-            $db = db_connect();
-            $query = $db->query("SELECT purchase_invoice_items.*, product.name as product_name, warehouses.name as warehouse_name, SUM(purchase_invoice_items.quantity) AS item_quantity, purchase_invoices.warehouse_id, warehouses.name FROM purchase_invoice_items 
-            JOIN product ON purchase_invoice_items.product_id = product.id 
-            JOIN purchase_invoices ON purchase_invoice_items.purchase_invoice_id = purchase_invoices.id 
-            JOIN warehouses ON purchase_invoices.warehouse_id = warehouses.id WHERE purchase_invoice_items.status = 'unallocated' 
-            GROUP BY purchase_invoice_items.product_id, purchase_invoices.warehouse_id, warehouses.name;");
-            $data['products'] = $query->getResult();
+            $floorModel = new WarehouseModel();
+            $data['warehouses'] = $floorModel->get_warehouses();
             
             return view('loggedinuser/index.php', $data);
         } else {

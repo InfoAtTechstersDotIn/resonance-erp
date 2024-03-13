@@ -4532,16 +4532,16 @@ class Api extends ResourceController
 
         switch ($_GET['type']) {
             case 'BRANCH':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.branch_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, product.name AS product_specification_name FROM allocated_assets JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.branch_id = $id");          
                 break;
             case 'BUILDING':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.building_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, product.name AS product_specification_name FROM allocated_assets JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.building_id = $id");          
                 break;
             case 'FLOOR':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.floor_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, product.name AS product_specification_name FROM allocated_assets JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.floor_id = $id");          
                 break;
             case 'ROOM':
-                $query = $db->query("SELECT allocated_assets.*, manufacturers.name AS manufacturer_name, product.name AS product_specification_name FROM allocated_assets JOIN manufacturers ON allocated_assets.manufacturer_id = manufacturers.id JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.room_id = $id");          
+                $query = $db->query("SELECT allocated_assets.*, product.name AS product_specification_name FROM allocated_assets JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.room_id = $id");          
                 break;
         }        
 
@@ -4597,6 +4597,30 @@ class Api extends ResourceController
         return $this->respond([
             'status' => true,
             'message' => "Item successfully updated",
+            'data' => $data
+        ]);
+    }
+
+    public function get_warehouse_items($id) 
+    {
+        $db = db_connect();
+        $query = $db->query("SELECT warehouse_items.*, 
+        product.name as product_name, 
+        warehouses.name as warehouse_name, 
+        warehouse_items.warehouse_id, 
+        product.product_type_id, 
+        product_type.name as product_type,
+        warehouses.name 
+        FROM warehouse_items 
+        JOIN product ON warehouse_items.product_id = product.id 
+        JOIN product_type ON product.product_type_id = product_type.id 
+        JOIN warehouses ON warehouse_items.warehouse_id = warehouses.id 
+        WHERE warehouse_items.warehouse_id = ".$id." AND warehouse_items.available_quantity > 0;");
+        $data = $query->getResult();
+
+        return $this->respond([
+            'status' => true,
+            'message' => "Item successfully fetched",
             'data' => $data
         ]);
     }

@@ -125,7 +125,8 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Manufacturer</th>
+                                    <th>Quantity</th>
+                                    <th>Manufacturer Serial No</th>
                                     <th>Product Serial No</th>
                                     <th>Action</th>
                                 </tr>
@@ -241,9 +242,12 @@
                 
                 let product_specification_name = document.createElement('td');
                 product_specification_name.innerHTML =element.product_specification_name;
+                
+                let product_quantity = document.createElement('td');
+                product_quantity.innerHTML =element.quantity;
 
                 let manufacturer_name = document.createElement('td');
-                manufacturer_name.innerHTML =element.manufacturer_name;
+                manufacturer_name.innerHTML =element.manufacturer_serial_no;
 
                 let product_serial_no = document.createElement('td');
                 product_serial_no.innerHTML =element.product_serial_no;
@@ -277,7 +281,7 @@
 
                 action.append(checkbox,product_id, purchase_invoice_item_id, manufacturer_serial_no, product_serial_no_input);
                 
-                parentDiv.append(product_specification_name, manufacturer_name, product_serial_no, action);
+                parentDiv.append(product_specification_name, product_quantity, manufacturer_name, product_serial_no, action);
                 document.getElementById('items-list-table').appendChild(parentDiv);
             });
 

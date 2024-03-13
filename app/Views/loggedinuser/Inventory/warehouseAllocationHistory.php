@@ -10,6 +10,7 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
+                                    <th></th>
                                     <th>Warehouse</th>
                                     <th>Branch</th>
                                     <th>Building</th>
@@ -22,8 +23,8 @@
                             <tbody>
                             <?php foreach ($products as $result) : ?>
                                 <tr>
-                                    
                                     <td><?php echo $result->product_name ?></td>
+                                    <td><?php echo $result->quantity ?></td>
                                     <td><?php echo $result->warehouse_name ?></td>
                                     <td><?php echo $result->branch_name ?></td>
                                     <td><?php echo $result->building_name ?></td>
