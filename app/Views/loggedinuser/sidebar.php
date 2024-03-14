@@ -212,6 +212,7 @@ if ($_SESSION['rights'] != null) : ?>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_transfer') ?>"><i class="fa fa-indent"></i>Asset Transfer</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_transfer_history') ?>"><i class="fa fa-indent"></i>Asset Transfer History</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_report') ?>"><i class="fa fa-indent"></i>Asset Report</a></li>
+                    <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/branch_assets') ?>"><i class="fa fa-indent"></i>Branch Assets</a></li>
                     <li style="margin-left: 30px;"><a href="<?php echo base_url('Inventory/asset_audit') ?>"><i class="fa fa-indent"></i>Asset Audit</a></li>
                     <?php endif; ?>
                      

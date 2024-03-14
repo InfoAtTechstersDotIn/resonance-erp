@@ -2561,4 +2561,39 @@ class Inventory extends BaseController
             return redirect()->to(base_url('dashboard'));
         }
     }
+
+    public function branch_assets()
+    {
+        if ($_SESSION['userdetails'] != null) {
+                $data['page_name'] = 'Inventory/branchAssets';
+                
+                $branch_id = 3;
+
+                $db = db_connect();
+                $query = $db->query("SELECT allocated_assets.*, product.name AS product_name FROM allocated_assets JOIN product ON allocated_assets.product_id = product.id WHERE allocated_assets.branch_id = $branch_id");
+                $data['products'] = $query->getResult();
+
+                return view('loggedinuser/index.php', $data);
+            } 
+            else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
+
+    public function asset_received($id)
+    {
+        if ($_SESSION['userdetails'] != null) {
+                $data['page_name'] = 'Inventory/branchAssets';
+
+                $allocatedAssetModel = new AllocatedAssetsModel();
+                $allocatedAssetModel->update_allocated_assets($id,[
+                    'is_received' => true
+                ]);
+                
+                return redirect()->back();
+            } 
+            else {
+            return redirect()->to(base_url('dashboard'));
+        }
+    }
 }

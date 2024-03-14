@@ -4566,15 +4566,6 @@ class Api extends ResourceController
         ]);
     }
 
-    // SELECT SD.userid, SD.email,BL.branchname, SD.applicationnumber,SCR.branchid,SCR.sectionid,
-    //             SD.name, SD.fathername, SD.mothername, CL.coursename, CL.courseid,  SL.sectionname,SAD.date,SAD.status FROM studentdetails SD
-    //                           LEFT JOIN student_class_relation SCR ON SD.userid = SCR.studentid
-    //                           LEFT JOIN branchlookup BL ON SCR.branchid = BL.branchid
-    //                           LEFT JOIN batchlookup BAL ON SCR.batchid = BAL.batchid
-    //                           LEFT JOIN courselookup CL ON SCR.courseid = CL.courseid 
-    //                           LEFT JOIN sectionlookup SL ON SCR.sectionid = SL.sectionid
-    //                           LEFT JOIN student_attendance_details SAD ON SAD.user_id = SD.userid
-
     public function get_warehouse_item($id, $product_id) 
     {
         $db = db_connect();
